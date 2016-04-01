@@ -7,14 +7,14 @@ build:
     - if [ $$arch = 32 ]; then export DISABLE_QUALITY_CHECK=true; fi
     - ./ci-build.sh
 
-notify:
-  irc:
-    prefix: build
-    nick: MINGW-packages
-    channel: msys2-ci
-    server:
-      host: irc.oftc.net
-      port: 6667
+#notify:
+#  irc:
+#    prefix: build
+#    nick: MINGW-packages
+#    channel: msys2-ci
+#    server:
+#      host: irc.oftc.net
+#      port: 6667
 
 matrix:
   arch:

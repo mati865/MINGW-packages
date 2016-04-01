@@ -8,9 +8,9 @@
 cd "$(dirname "$0")"
 source 'ci-library.sh'
 deploy_enabled && mkdir artifacts
-git_config user.email 'ci@msys2.org'
-git_config user.name  'MSYS2 Continuous Integration'
-git remote add upstream 'https://github.com/Alexpux/MINGW-packages'
+git_config user.email 'mati865@gmail.com'
+git_config user.name  'mati865 MinGW Continuous Integration'
+git remote add upstream 'https://github.com/mati865/MINGW-packages'
 git fetch --quiet upstream
 
 # Detect

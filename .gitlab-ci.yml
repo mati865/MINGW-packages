@@ -1,0 +1,5 @@
+job1:
+  image: teaci/msys32
+  script:
+  - /usr/bin/msys32 /builds/mati865/MINGW-packages/ci-build.sh
+  
