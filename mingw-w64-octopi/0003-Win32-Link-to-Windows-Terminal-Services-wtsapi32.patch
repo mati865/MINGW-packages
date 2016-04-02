@@ -1,0 +1,17 @@
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Sat, 27 Dec 2014 14:58:27 +0000
+Subject: [PATCH 03/14] Win32: Link to Windows Terminal Services (wtsapi32)
+
+---
+diff -urN octopi-0.8.1.orig/octopi.pro octopi-0.8.1/octopi.pro
+--- octopi-0.8.1.orig/octopi.pro	2016-04-02 20:51:26.202538400 +0200
++++ octopi-0.8.1/octopi.pro	2016-04-02 20:52:38.147403400 +0200
+@@ -14,6 +14,8 @@
+ MOC_DIR += build
+ UI_DIR += build
+ 
++win32: LIBS += -lwtsapi32
++
+ HEADERS += src/QtSolutions/qtsingleapplication.h \
+         src/QtSolutions/qtlocalpeer.h \
+         repoeditor/repoentry.h \

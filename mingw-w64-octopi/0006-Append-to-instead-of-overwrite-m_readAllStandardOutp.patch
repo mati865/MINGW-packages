@@ -1,0 +1,17 @@
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Sun, 28 Sep 2014 23:15:23 +0100
+Subject: [PATCH 06/14] Append to instead of overwrite m_readAllStandardOutput
+
+---
+diff -urN octopi-0.8.1.orig/src/unixcommand.cpp octopi-0.8.1/src/unixcommand.cpp
+--- octopi-0.8.1.orig/src/unixcommand.cpp	2016-04-02 21:00:56.629373900 +0200
++++ octopi-0.8.1/src/unixcommand.cpp	2016-04-02 21:02:30.247403200 +0200
+@@ -762,7 +762,7 @@
+ void UnixCommand::processReadyReadStandardOutput()
+ {
+   if (m_process->isOpen())
+-    m_readAllStandardOutput = m_process->readAllStandardOutput();
++    m_readAllStandardOutput += m_process->readAllStandardOutput();
+ }
+ 
+ /*

@@ -1,0 +1,87 @@
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Sat, 27 Sep 2014 15:42:50 +0100
+Subject: [PATCH 11/14] MSYS2: Changes to various system calls
+
+openRootTerminal(), runCommandInTerminal()
+getSUCommand(), isRootRunning()
+
+MSYS2 behaviour changes for these:
+*Terminal() runs msys2_shell.bat
+getSUCommand() returns "sh.exe -c "
+isRootRunning() returns false
+---
+diff -urN octopi-0.8.1.orig/src/constants.h octopi-0.8.1/src/constants.h
+--- octopi-0.8.1.orig/src/constants.h	2016-04-02 21:23:52.054780900 +0200
++++ octopi-0.8.1/src/constants.h	2016-04-02 21:35:31.843602200 +0200
+@@ -99,6 +100,7 @@
+ //WMHelper related
+ const QString ctn_NO_SU_COMMAND("none");
+ const QString ctn_ROOT_SH("/bin/sh -c ");
++const QString ctn_MSYS2_SH("cmd.exe /c ");
+ 
+ const QString ctn_LXQTSU("lxqt-sudo");
+ 
+diff -urN octopi-0.8.1.orig/src/terminal.cpp octopi-0.8.1/src/terminal.cpp
+--- octopi-0.8.1.orig/src/terminal.cpp	2016-04-02 21:23:52.059786800 +0200
++++ octopi-0.8.1/src/terminal.cpp	2016-04-02 21:29:52.711563300 +0200
+@@ -205,7 +205,12 @@
+ {
+   if (m_selectedTerminal == ctn_AUTOMATIC)
+   {
+-    if (UnixCommand::getLinuxDistro() == ectn_MOOOSLINUX && UnixCommand::hasTheExecutable(ctn_RXVT_TERMINAL))
++    if (UnixCommand::getLinuxDistro() == ectn_MSYS2)
++    {
++        QString cmd = ctn_MSYS2_SH + UnixCommand::getMSYS2Root() + QLatin1String("/msys2_shell.bat");
++        m_process->startDetached(cmd);
++    }
++    else if (UnixCommand::getLinuxDistro() == ectn_MOOOSLINUX && UnixCommand::hasTheExecutable(ctn_RXVT_TERMINAL))
+     {
+       QString cmd = WMHelper::getSUCommand() + " \"" + ctn_RXVT_TERMINAL +
+           " -name Urxvt -title Urxvt \"";
+@@ -359,6 +364,11 @@
+ 
+   if (m_selectedTerminal == ctn_AUTOMATIC)
+   {
++    if (UnixCommand::getLinuxDistro() == ectn_MSYS2)
++    {
++      QString cmd = ctn_MSYS2_SH + UnixCommand::getMSYS2Root() + QLatin1String("/msys2_shell.bat -c ") + ftemp->fileName();
++      m_process->start(cmd);
++    }
+     if (UnixCommand::getLinuxDistro() == ectn_MOOOSLINUX && UnixCommand::hasTheExecutable(ctn_RXVT_TERMINAL))
+     {
+       QString cmd =
+diff -urN octopi-0.8.1.orig/src/unixcommand.h octopi-0.8.1/src/unixcommand.h
+--- octopi-0.8.1.orig/src/unixcommand.h	2016-04-02 21:23:52.060787000 +0200
++++ octopi-0.8.1/src/unixcommand.h	2016-04-02 21:33:13.611147300 +0200
+@@ -113,10 +113,16 @@
+   static bool hasTheExecutable( const QString& exeName );
+   static bool isAppRunning(const QString &appName, bool justOneInstance = false);
+ 
++#if defined(_WIN32)
++  static bool isRootRunning(){
++    return false;
++  }
++#else
+   static bool isRootRunning(){
+     int uid = geteuid();
+     return (uid == 0); //Returns TRUE if root is running Octopi
+   }
++#endif
+ 
+   static QString getMSYS2Root(){
+     if (m_msys2Root.isEmpty())
+diff -urN octopi-0.8.1.orig/src/wmhelper.cpp octopi-0.8.1/src/wmhelper.cpp
+--- octopi-0.8.1.orig/src/wmhelper.cpp	2016-04-02 21:23:52.090788700 +0200
++++ octopi-0.8.1/src/wmhelper.cpp	2016-04-02 21:34:33.020795100 +0200
+@@ -309,7 +309,10 @@
+ QString WMHelper::getSUCommand(){
+   QString result(ctn_NO_SU_COMMAND);
+ 
+-  if (isXFCERunning() && (UnixCommand::hasTheExecutable(ctn_GKSU_2))){
++  if (UnixCommand::getLinuxDistro() == ectn_MSYS2){
++    return QLatin1String("sh.exe -c ");
++  }
++  else if (isXFCERunning() && (UnixCommand::hasTheExecutable(ctn_GKSU_2))){
+     result = getGKSUCommand();
+   }
+   else if (isKDERunning() && UnixCommand::hasTheExecutable(ctn_KDESU)){

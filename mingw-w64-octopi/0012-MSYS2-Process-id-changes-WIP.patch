@@ -1,0 +1,136 @@
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Sat, 27 Sep 2014 15:44:22 +0100
+Subject: [PATCH 12/14] MSYS2: Process id changes (WIP)
+
+mati865: Check point of line 101 of original patch and of this patch
+---
+diff -urN octopi-0.8.1.orig/notifier/octopi-notifier/octopi-notifier.pro octopi-0.8.1/notifier/octopi-notifier/octopi-notifier.pro
+--- octopi-0.8.1.orig/notifier/octopi-notifier/octopi-notifier.pro	2016-04-02 21:35:47.905679100 +0200
++++ octopi-0.8.1/notifier/octopi-notifier/octopi-notifier.pro	2016-04-02 21:38:30.428646400 +0200
+@@ -60,6 +60,8 @@
+     ../../src/searchlineedit.h \
+     ../../src/searchbar.h
+ 
++win32: LIBS += -lwtsapi32
++
+ FORMS += ../../ui/transactiondialog.ui \
+     ui/setupdialog.ui
+ 
+diff -urN octopi-0.8.1.orig/src/utils.cpp octopi-0.8.1/src/utils.cpp
+--- octopi-0.8.1.orig/src/utils.cpp	2016-04-02 21:35:47.450684400 +0200
++++ octopi-0.8.1/src/utils.cpp	2016-04-02 21:48:10.642884700 +0200
+@@ -38,6 +38,12 @@
+ #include <QProcess>
+ #include <QTimer>
+ #include <QTextBrowser>
++#include <QDebug>
++
++#if defined(Q_OS_WIN)
++#include <windows.h>
++#include <wtsapi32.h>
++#endif
+ 
+ #if QT_VERSION >= 0x050000
+ #include <QScreen>
+@@ -89,8 +95,64 @@
+   emit startedTerminal();
+ }
+ 
++#if defined(Q_OS_WIN)
+ QString Ps_To_Q_PIDs(QString ps_args)
+ {
++  QString ps_name;
++  QString out;
++  QStringList in_pids;
++  if (ps_args.startsWith(QLatin1String("ps -o pid -C")))
++  {
++    ps_name = ps_args.remove(QLatin1String("ps -o pid -C")).trimmed();
++  }
++  else if (ps_args.startsWith(QLatin1String("ps -O cmd --ppid")))
++  {
++    in_pids.append(ps_args.remove("ps -O cmd --ppid").trimmed());
++  }
++  else if (ps_args.startsWith(QLatin1String("ps -p")))
++  {
++    QString temp = ps_args.remove("ps -p").trimmed();
++    QTextStream pid_args(&temp);
++    while (!pid_args.atEnd())
++    {
++      QString a_pid;
++      pid_args >> a_pid;
++      in_pids.append(a_pid);
++    }
++  }
++  WTS_PROCESS_INFO* pProcessInfo = 0;
++  DWORD Count;
++  if(WTSEnumerateProcesses(WTS_CURRENT_SERVER_HANDLE, 0, 1, &pProcessInfo, &Count))
++  {
++    for(DWORD i = 0; i < Count; i++)
++    {
++      qDebug() << pProcessInfo[i].pProcessName << "\tPID="
++               << pProcessInfo[i].ProcessId << "\tSess="
++               << pProcessInfo[i].SessionId;
++      QString process_name = QString::fromWCharArray(pProcessInfo[i].pProcessName);
++      if (!ps_name.isEmpty())
++      {
++        out += QLatin1String("PID\n");
++        if (ps_name == process_name)
++        {
++           out += QString::number(pProcessInfo[i].ProcessId) + QLatin1String("\n");
++           return out;
++        }
++      }
++    }
++//    BOOL WINAPI EnumProcesses(
++//      _Out_  DWORD *pProcessIds,
++//      _In_   DWORD cb,
++//      _Out_  DWORD *pBytesReturned
++//    );
++  }
++  return out;
++}
++#else /* !defined(Q_OS_WIN) */
++
++QString Ps_To_Q_PIDs(QString ps_args)
++{
++  QStringList list;
+   QString out;
+   QProcess proc;
+   proc.start(ps_args);
+@@ -99,6 +161,7 @@
+   proc.close();
+   return out;
+ }
++#endif /* defined(Q_OS_WIN) */
+ 
+ QStringList Ps_To_Q_PIDs_SL(QString ps_args)
+ {
+@@ -107,6 +170,20 @@
+     return list;
+ }
+ 
++#if defined(Q_OS_WIN)
++Q_PID int_to_Q_PID(int in_pid)
++{
++  Q_UNUSED(in_pid);
++  return 0;
++}
++
++int Q_PID_to_int(Q_PID in_pid)
++{
++  Q_UNUSED(in_pid);
++  return 1;
++}
++
++#else
+ /*
+  * Returns the _PROCESS_INFORMATION* on Windows, does nothing on
+  * others.
+@@ -120,6 +197,7 @@
+ {
+   return in_pid;
+ }
++#endif
+ 
+ /*
+  * We need this to search for the SH process pid (which spaws AUR tool)

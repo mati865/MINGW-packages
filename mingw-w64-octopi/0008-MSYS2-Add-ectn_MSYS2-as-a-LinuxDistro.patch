@@ -1,0 +1,38 @@
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Sat, 27 Sep 2014 15:31:32 +0100
+Subject: [PATCH 08/14] MSYS2: Add ectn_MSYS2 as a LinuxDistro
+
+---
+diff -urN octopi-0.8.1.orig/src/constants.h octopi-0.8.1/src/constants.h
+--- octopi-0.8.1.orig/src/constants.h	2016-04-02 21:04:38.446544800 +0200
++++ octopi-0.8.1/src/constants.h	2016-04-02 21:10:24.239418400 +0200
+@@ -41,7 +41,7 @@
+                         ectn_RUN_SYSTEM_UPGRADE_IN_TERMINAL, ectn_RUN_IN_TERMINAL };
+ 
+ enum LinuxDistro { ectn_ANTERGOS, ectn_ARCHBANGLINUX, ectn_ARCHBSD, ectn_ARCHLINUX, ectn_CHAKRA,
+-                   ectn_KAOS, ectn_MANJAROLINUX, ectn_MOOOSLINUX, ectn_NETRUNNER, ectn_PARABOLA, ectn_UNKNOWN };
++                   ectn_KAOS, ectn_MANJAROLINUX, ectn_MOOOSLINUX, ectn_NETRUNNER, ectn_PARABOLA, ectn_MSYS2, ectn_UNKNOWN };
+ 
+ enum Language { ectn_LANG_ENGLISH, ectn_LANG_USER_DEFINED };
+ 
+diff -urN octopi-0.8.1.orig/src/unixcommand.cpp octopi-0.8.1/src/unixcommand.cpp
+--- octopi-0.8.1.orig/src/unixcommand.cpp	2016-04-02 21:04:38.439544300 +0200
++++ octopi-0.8.1/src/unixcommand.cpp	2016-04-02 21:07:01.176515700 +0200
+@@ -1012,6 +1012,9 @@
+ LinuxDistro UnixCommand::getLinuxDistro()
+ {
+   static LinuxDistro ret;
++#if defined(Q_OS_WIN)
++  ret = ectn_MSYS2;
++#else
+   static bool firstTime = true;
+ 
+   if (firstTime)
+@@ -1075,6 +1078,7 @@
+       file.close();
+     }
+   }
++#endif
+ 
+   return ret;
+ }

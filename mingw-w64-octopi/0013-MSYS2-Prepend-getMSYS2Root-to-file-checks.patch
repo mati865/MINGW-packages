@@ -1,0 +1,16 @@
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Sun, 28 Sep 2014 23:14:17 +0100
+Subject: [PATCH 13/14] MSYS2: Prepend getMSYS2Root() to file checksdiff -urN octopi-0.8.1.orig/src/utils.cpp octopi-0.8.1/src/utils.cpp
+
+---
+--- octopi-0.8.1.orig/src/utils.cpp	2016-04-02 21:49:38.929249100 +0200
++++ octopi-0.8.1/src/utils.cpp	2016-04-02 21:51:47.247612100 +0200
+@@ -327,7 +327,7 @@
+       str += sl[i];
+     }
+ 
+-    QFileInfo fileInfo(str);
++    QFileInfo fileInfo(UnixCommand::getMSYS2Root() + str);
+     if (fileInfo.isDir())
+     {
+       str += QLatin1Char('/');

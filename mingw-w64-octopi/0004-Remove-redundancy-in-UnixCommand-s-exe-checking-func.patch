@@ -1,0 +1,53 @@
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Tue, 30 Sep 2014 14:43:39 +0100
+Subject: [PATCH 04/14] Remove redundancy in UnixCommand's exe checking
+ functions
+
+Check the result of UnixCommand::discoverBinaryPath() not
+being empty in UnixCommand::hasTheExecutable() instead of
+repeating much the same code.
+---
+diff -urN octopi-0.8.1.orig/src/unixcommand.cpp octopi-0.8.1/src/unixcommand.cpp
+--- octopi-0.8.1.orig/src/unixcommand.cpp	2016-04-02 20:52:57.495530700 +0200
++++ octopi-0.8.1/src/unixcommand.cpp	2016-04-02 20:57:04.534565500 +0200
+@@ -61,6 +61,7 @@
+ QString UnixCommand::runCurlCommand(const QString& commandToRun){
+   QProcess proc;
+   proc.setProcessEnvironment(getEnv());
++  proc.setProcessChannelMode(QProcess::MergedChannels);
+   proc.start(commandToRun);
+   proc.waitForStarted();
+   proc.waitForFinished(-1);
+@@ -90,6 +91,11 @@
+   proc.close();
+   res = res.remove('\n');
+ 
++  if (res.count("which"))
++      res.clear();
++
++  if (!res.isEmpty()) return res;
++
+   //If it still didn't find it, try "/sbin" dir...
+   if (res.isEmpty()){
+     QFile fbin("/sbin/" + binary);
+@@ -583,19 +589,7 @@
+  */
+ bool UnixCommand::hasTheExecutable( const QString& exeName )
+ {
+-  //std::cout << "Searching for the executable: " << exeName.toLatin1().data() << std::endl;
+-
+-  QProcess proc;
+-  proc.setProcessChannelMode(QProcess::MergedChannels);
+-  QString sParam = "\"which " + exeName + "\"";
+-  proc.start("/bin/sh -c " + sParam);
+-  proc.waitForFinished();
+-
+-  QString out = proc.readAllStandardOutput();
+-  proc.close();
+-
+-  if (out.isEmpty() || out.count("which") > 0) return false;
+-  else return true;
++  return (!discoverBinaryPath(exeName).isEmpty());
+ }
+ 
+ /*

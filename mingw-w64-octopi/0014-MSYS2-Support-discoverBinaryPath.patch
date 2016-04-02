@@ -1,0 +1,22 @@
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Tue, 30 Sep 2014 19:12:30 +0100
+Subject: [PATCH 14/14] MSYS2: Support discoverBinaryPath()
+
+---
+diff -urN octopi-0.8.1.orig/src/unixcommand.cpp octopi-0.8.1/src/unixcommand.cpp
+--- octopi-0.8.1.orig/src/unixcommand.cpp	2016-04-02 21:52:09.532734200 +0200
++++ octopi-0.8.1/src/unixcommand.cpp	2016-04-02 21:52:50.910742200 +0200
+@@ -85,7 +85,12 @@
+   QProcess proc;
+   proc.setProcessEnvironment(getEnv());
+ 
+-  proc.start("/bin/sh -c \"which " + binary + "\"");
++  QString cmd;
++  if (UnixCommand::getLinuxDistro() == ectn_MSYS2)
++    cmd = ctn_MSYS2_SH + UnixCommand::getMSYS2Root() + "/usr/bin/sh -c \"which " + binary + "\"";
++  else
++    cmd = "/bin/sh -c \"which " + binary + "\"";
++  proc.start(cmd);
+   proc.waitForFinished();
+   QString res = proc.readAllStandardOutput();
+ 

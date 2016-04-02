@@ -1,0 +1,17 @@
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Sat, 27 Sep 2014 15:02:24 +0100
+Subject: [PATCH 07/14] Define QT_WA
+
+---
+diff -urN octopi-0.8.1.orig/src/QtSolutions/qtlockedfile_win.cpp octopi-0.8.1/src/QtSolutions/qtlockedfile_win.cpp
+--- octopi-0.8.1.orig/src/QtSolutions/qtlockedfile_win.cpp	2016-04-02 21:02:56.194465200 +0200
++++ octopi-0.8.1/src/QtSolutions/qtlockedfile_win.cpp	2016-04-02 21:04:18.057936400 +0200
+@@ -45,6 +45,8 @@
+ // Maximum number of concurrent read locks. Must not be greater than MAXIMUM_WAIT_OBJECTS
+ #define MAX_READERS MAXIMUM_WAIT_OBJECTS
+ 
++#define QT_WA(unicode, ansi) unicode
++
+ Qt::HANDLE QtLockedFile::getMutexHandle(int idx, bool doCreate)
+ {
+     if (mutexname.isEmpty()) {

@@ -1,0 +1,49 @@
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Sun, 28 Sep 2014 23:12:28 +0100
+Subject: [PATCH 05/14] Use '/' instead of QDir::separator()
+
+---
+diff -urN octopi-0.8.1.orig/src/utils.cpp octopi-0.8.1/src/utils.cpp
+--- octopi-0.8.1.orig/src/utils.cpp	2016-04-02 20:57:22.081297100 +0200
++++ octopi-0.8.1/src/utils.cpp	2016-04-02 21:00:35.849348000 +0200
+@@ -242,17 +242,17 @@
+       if ( nindex != sim->invisibleRootItem()->index() ) sl << sim->itemFromIndex( nindex )->text();
+       else break;
+     }
+-    str = QDir::separator() + str;
++    str = QLatin1Char('/') + str;
+ 
+     for ( int i=sl.count()-1; i>=0; i-- ){
+-      if ( i < sl.count()-1 ) str += QDir::separator();
++      if ( i < sl.count()-1 ) str += QLatin1Char('/');
+       str += sl[i];
+     }
+ 
+     QFileInfo fileInfo(str);
+     if (fileInfo.isDir())
+     {
+-      str += QDir::separator();
++      str += QLatin1Char('/');
+     }
+   }
+ 
+@@ -302,8 +302,8 @@
+ 
+   LinuxDistro distro = UnixCommand::getLinuxDistro();
+   QString res;
+-  QString tmpRssPath = QDir::homePath() + QDir::separator() + ".config/octopi/.tmp_distro_rss.xml";
+-  QString rssPath = QDir::homePath() + QDir::separator() + ".config/octopi/distro_rss.xml";
++  QString tmpRssPath = QDir::homePath() + QLatin1Char('/') + ".config/octopi/.tmp_distro_rss.xml";
++  QString rssPath = QDir::homePath() + QLatin1Char('/') + ".config/octopi/distro_rss.xml";
+   QString contentsRss;
+ 
+   QFile fileRss(rssPath);
+@@ -472,7 +472,7 @@
+     html = "<p align=\"center\"><h2>" + StrConstants::getParabolaNews() + "</h2></p><ul>";
+   }
+ 
+-  QString rssPath = QDir::homePath() + QDir::separator() + ".config/octopi/distro_rss.xml";
++  QString rssPath = QDir::homePath() + QLatin1Char('/') + ".config/octopi/distro_rss.xml";
+   QDomDocument doc("rss");
+   int itemCounter=0;
+ 
