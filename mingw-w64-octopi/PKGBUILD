@@ -105,7 +105,7 @@ package() {
 
   install -D -m755 bin/${_realname}                                            ${pkgdir}${MINGW_PREFIX}/bin/${_realname}
   install -D -m755 notifier/bin/${_realname}-notifier                          ${pkgdir}${MINGW_PREFIX}/bin/${_realname}-notifier
-  install -D -m644 ${srcdir}/${_realname}-${pkgver}/resources/images/${_realname}_red.png ${pkgdir}${MINGW_PREFIX}/share/icons/$}_realname}.png
+  install -D -m644 ${srcdir}/${_realname}-${pkgver}/resources/images/${_realname}_red.png ${pkgdir}${MINGW_PREFIX}/share/icons/${_realname}.png
 
   #services
   install -D -m755 notifier/bin/pacmanhelper                                  ${pkgdir}${MINGW_PREFIX}/lib/octopi/pacmanhelper
