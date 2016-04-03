@@ -22,9 +22,23 @@ diff -urN octopi-0.8.1.orig/src/constants.h octopi-0.8.1/src/constants.h
  const QString ctn_LXQTSU("lxqt-sudo");
  
 diff -urN octopi-0.8.1.orig/src/terminal.cpp octopi-0.8.1/src/terminal.cpp
---- octopi-0.8.1.orig/src/terminal.cpp	2016-04-02 21:23:52.059786800 +0200
-+++ octopi-0.8.1/src/terminal.cpp	2016-04-02 21:29:52.711563300 +0200
-@@ -205,7 +205,12 @@
+--- octopi-0.8.1.orig/src/terminal.cpp  2016-03-27 21:54:26.000000000 +0200
++++ octopi-0.8.1/src/terminal.cpp       2016-04-03 22:46:18.013323400 +0200
+@@ -66,7 +66,12 @@
+
+   if (m_selectedTerminal == ctn_AUTOMATIC)
+   {
+-    if(WMHelper::isXFCERunning() && UnixCommand::hasTheExecutable(ctn_XFCE_TERMINAL)){
++    if (UnixCommand::getLinuxDistro() == ectn_MSYS2)
++    {
++      QString cmd = ctn_MSYS2_SH + UnixCommand::getMSYS2Root() + QLatin1String("/msys2_shell.bat");
++      m_process->startDetached(cmd);
++    }
++    else if(WMHelper::isXFCERunning() && UnixCommand::hasTheExecutable(ctn_XFCE_TERMINAL)){
+       s << "--working-directory=" + dirName;
+       m_process->startDetached( ctn_XFCE_TERMINAL, s );
+     }
+@@ -205,7 +210,12 @@
  {
    if (m_selectedTerminal == ctn_AUTOMATIC)
    {
@@ -38,18 +52,33 @@ diff -urN octopi-0.8.1.orig/src/terminal.cpp octopi-0.8.1/src/terminal.cpp
      {
        QString cmd = WMHelper::getSUCommand() + " \"" + ctn_RXVT_TERMINAL +
            " -name Urxvt -title Urxvt \"";
-@@ -359,6 +364,11 @@
- 
+@@ -359,7 +369,12 @@
+
    if (m_selectedTerminal == ctn_AUTOMATIC)
    {
+-    if (UnixCommand::getLinuxDistro() == ectn_MOOOSLINUX && UnixCommand::hasTheExecutable(ctn_RXVT_TERMINAL))
 +    if (UnixCommand::getLinuxDistro() == ectn_MSYS2)
 +    {
 +      QString cmd = ctn_MSYS2_SH + UnixCommand::getMSYS2Root() + QLatin1String("/msys2_shell.bat -c ") + ftemp->fileName();
 +      m_process->start(cmd);
 +    }
-     if (UnixCommand::getLinuxDistro() == ectn_MOOOSLINUX && UnixCommand::hasTheExecutable(ctn_RXVT_TERMINAL))
++    else if (UnixCommand::getLinuxDistro() == ectn_MOOOSLINUX && UnixCommand::hasTheExecutable(ctn_RXVT_TERMINAL))
      {
        QString cmd =
+           suCommand + " \"" + ctn_RXVT_TERMINAL + " -title pacman -name pacman -e " + UnixCommand::getShell() + " -c " + ftemp->fileName() + "\"";
+@@ -507,7 +522,11 @@
+
+   if (m_selectedTerminal == ctn_AUTOMATIC)
+   {
+-    if (UnixCommand::getLinuxDistro() == ectn_MOOOSLINUX && UnixCommand::hasTheExecutable(ctn_RXVT_TERMINAL))
++    if (UnixCommand::getLinuxDistro() == ectn_MSYS2)
++    {
++      cmd = ctn_MSYS2_SH + UnixCommand::getMSYS2Root() + QLatin1String("/msys2_shell.bat -c ") + ftemp->fileName();
++    }
++    else if (UnixCommand::getLinuxDistro() == ectn_MOOOSLINUX && UnixCommand::hasTheExecutable(ctn_RXVT_TERMINAL))
+     {
+       if (UnixCommand::isAppRunning("urxvtd"))
+       {
 diff -urN octopi-0.8.1.orig/src/unixcommand.h octopi-0.8.1/src/unixcommand.h
 --- octopi-0.8.1.orig/src/unixcommand.h	2016-04-02 21:23:52.060787000 +0200
 +++ octopi-0.8.1/src/unixcommand.h	2016-04-02 21:33:13.611147300 +0200

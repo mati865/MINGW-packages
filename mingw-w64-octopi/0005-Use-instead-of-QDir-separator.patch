@@ -3,9 +3,33 @@ Date: Sun, 28 Sep 2014 23:12:28 +0100
 Subject: [PATCH 05/14] Use '/' instead of QDir::separator()
 
 ---
+diff -urN octopi-0.8.1.orig/src/constants.h octopi-0.8.1/src/constants.h
+--- octopi-0.8.1.orig/src/constants.h	2016-03-27 21:54:26.000000000 +0200
++++ octopi-0.8.1/src/constants.h	2016-04-03 21:38:25.379689600 +0200
+@@ -83,7 +83,7 @@
+ const QString ctn_KEEP_NUM_UNINSTALLED("Keep_Num_Uninstalled");
+ 
+ //Package related
+-const QString ctn_TEMP_ACTIONS_FILE ( QDir::tempPath() + QDir::separator() + ".qt_temp_" );
++const QString ctn_TEMP_ACTIONS_FILE ( QDir::tempPath() + QLatin1Char('/') + ".qt_temp_" );
+ const QString ctn_PACMAN_DATABASE_DIR = "/var/lib/pacman";
+ const QString ctn_PACMAN_CORE_DB_FILE = "/var/lib/pacman/sync/core.db";
+ 
+diff -urN octopi-0.8.1.orig/src/settingsmanager.h octopi-0.8.1/src/settingsmanager.h
+--- octopi-0.8.1.orig/src/settingsmanager.h	2016-03-27 21:54:26.000000000 +0200
++++ octopi-0.8.1/src/settingsmanager.h	2016-04-03 21:38:23.021546100 +0200
+@@ -47,7 +47,7 @@
+     static QString getOctopiConfPath()
+     {
+       return QDir::homePath() +
+-          QDir::separator() + ".config/octopi/octopi.conf";
++          QLatin1Char('/') + ".config/octopi/octopi.conf";
+     }
+ 
+     static int getCurrentTabIndex();
 diff -urN octopi-0.8.1.orig/src/utils.cpp octopi-0.8.1/src/utils.cpp
---- octopi-0.8.1.orig/src/utils.cpp	2016-04-02 20:57:22.081297100 +0200
-+++ octopi-0.8.1/src/utils.cpp	2016-04-02 21:00:35.849348000 +0200
+--- octopi-0.8.1.orig/src/utils.cpp	2016-04-03 21:38:03.248971500 +0200
++++ octopi-0.8.1/src/utils.cpp	2016-04-03 21:38:28.678285900 +0200
 @@ -242,17 +242,17 @@
        if ( nindex != sim->invisibleRootItem()->index() ) sl << sim->itemFromIndex( nindex )->text();
        else break;
@@ -46,4 +70,4 @@ diff -urN octopi-0.8.1.orig/src/utils.cpp octopi-0.8.1/src/utils.cpp
 +  QString rssPath = QDir::homePath() + QLatin1Char('/') + ".config/octopi/distro_rss.xml";
    QDomDocument doc("rss");
    int itemCounter=0;
- 
+

@@ -4,8 +4,6 @@ Subject: [PATCH 02/14] Use a shared QProcessEnvironment
 
 This reduces a lot of repetition. Environment variables
 LANG, LC_MESSAGES, LC_ALL are set to "C" for all cases.
-
-mati865: Check 724 and 735 in octopi-0.8.1/src/unixcommand.cpp
 ---
 diff -urN octopi-0.8.1.orig/src/unixcommand.cpp octopi-0.8.1/src/unixcommand.cpp
 --- octopi-0.8.1.orig/src/unixcommand.cpp	2016-04-02 20:32:18.913181000 +0200
