@@ -53,7 +53,9 @@ package_python3-pillow() {
   # clean up bins
   cd "${pkgdir}${MINGW_PREFIX}/bin"
   for f in *.py; do
-    mv "$f" "${f%.py}"
+    #mv "$f" "${f%.py}"
+	echo $f
+	echo $f%
   done
 }
 
