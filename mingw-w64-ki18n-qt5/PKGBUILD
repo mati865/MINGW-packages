@@ -3,7 +3,7 @@
 _variant=-${KF5_VARIANT:-shared}
 source "$(dirname ${BASH_SOURCE[0]})"/../mingw-w64-PKGBUILD-common/kde-frameworks5
 _kde_f5_init_package "${_variant}" "ki18n"
-pkgver=5.23.0
+pkgver=5.24.0
 pkgrel=1
 arch=('any')
 pkgdesc="KDE Gettext-based UI text internationalization (mingw-w64-qt5${_namesuff})"
@@ -14,7 +14,7 @@ _kde_f5_add_depends "${_variant}" "${MINGW_PACKAGE_PREFIX}-qt5${_namesuff}" "${M
 groups=('kf5')
 source=("http://download.kde.org/stable/frameworks/${pkgver%.*}/${_basename}-${pkgver}.tar.xz"
         "build-ktranscript-plugin-statically-if-not-shared.patch")
-sha256sums=('5766c2ac116ad8eb2c33bc197db3c80337fc5d3de7245291ea0615173bef7b91'
+sha256sums=('bb01b060e29634678ef262aed500a54e8f26bda96c003eef1d0a6b5eaf268233'
             'fb05bcdf56feec1cae600a10b9706c6573bc9b39becea0e1061b10a65dc68a40')
 
 prepare() {

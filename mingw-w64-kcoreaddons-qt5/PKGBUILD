@@ -5,7 +5,7 @@
 _variant=-${KF5_VARIANT:-shared}
 source "$(dirname ${BASH_SOURCE[0]})"/../mingw-w64-PKGBUILD-common/kde-frameworks5
 _kde_f5_init_package "${_variant}" "kcoreaddons"
-pkgver=5.23.0
+pkgver=5.24.0
 pkgrel=1
 arch=('any')
 pkgdesc="Classes built on top of QtCore to perform various tasks (mingw-w64-qt5${_namesuff})"
@@ -14,11 +14,16 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-extra-cmake-modules")
 depends=()
 _kde_f5_add_depends "${_variant}" "${MINGW_PACKAGE_PREFIX}-qt5${_namesuff}" "${MINGW_PACKAGE_PREFIX}-bzip2"
 groups=('kf5')
-source=("http://download.kde.org/stable/frameworks/${pkgver%.*}/${_basename}-${pkgver}.tar.xz")
-sha256sums=('57940b097858007c014bda5c4917455cbdadbf2dab657cadc7748fb87d6d4108')
+source=("http://download.kde.org/stable/frameworks/${pkgver%.*}/${_basename}-${pkgver}.tar.xz"
+        "fix-build-with-gcc-6.patch")
+sha256sums=('7080985a9d51358fb8638a4a048e3d045ab2fb02b7c8ad6c8b596d3bfc3a5d1b'
+            '710f4eaf56d8a37498def7e2570d57a3d6bf3b5dd3f3cc4a7af78544e9f160f9')
 
 prepare() {
   mkdir -p build-${CARCH}${_variant}
+
+  cd ${srcdir}/${_basename}-${pkgver}
+  patch -p1 -i ${srcdir}/fix-build-with-gcc-6.patch
 }
 
 build() {
