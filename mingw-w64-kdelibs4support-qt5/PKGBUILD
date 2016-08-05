@@ -3,29 +3,26 @@
 
 _variant=-${KF5_VARIANT:-shared}
 source "$(dirname ${BASH_SOURCE[0]})"/../mingw-w64-PKGBUILD-common/kde-frameworks5
-_kde_f5_init_package "${_variant}" "kdoctools"
+_kde_f5_init_package "${_variant}" "kdelibs4support"
 pkgver=5.24.0
 pkgrel=1
 arch=('any')
-pkgdesc="Create documentation from DocBook (mingw-w64-qt5${_namesuff})"
+pkgdesc="Porting aid from KDELibs4 (mingw-w64-qt5${_namesuff})"
 license=('LGPL')
-options=('staticlibs')
-makedepends=("${MINGW_PACKAGE_PREFIX}-extra-cmake-modules"
-             "perl"
-             "perl-URI")
+makedepends=("${MINGW_PACKAGE_PREFIX}-extra-cmake-modules")
 depends=()
-_kde_f5_add_depends "${MINGW_PACKAGE_PREFIX}-qt5${_namesuff}" "${MINGW_PACKAGE_PREFIX}-docbook-xml" "${MINGW_PACKAGE_PREFIX}-docbook-xsl"
+_kde_f5_add_depends "${_variant}" "${MINGW_PACKAGE_PREFIX}-qt5${_namesuff}" "${MINGW_PACKAGE_PREFIX}-kdewin-qt5"
 groups=('kf5')
-source=("http://download.kde.org/stable/frameworks/${pkgver%.*}/${_basename}-${pkgver}.tar.xz"
-        "hack-fix-paths.patch")
-sha256sums=('3193cf3438bf6b7954c8e3057d35e4cc97ea0c550bb383685a213480ef4c22e4'
-            '8b8cacdaa94a075a74af9889c73974e3a6fb0115c5e52b39e892f1c70cb17fe8')
+source=("http://download.kde.org/stable/frameworks/${pkgver%.*}/portingAids/${_basename}-${pkgver}.tar.xz"
+        "use-mingw-w64-defines.patch")
+sha256sums=('a1901c892aa6b3233ad3123648ccce9f197e81479d980e9738231a5c87d1518b'
+            'a553a458425300adf5a4e815f0f686da4a02ff0d0a1d3e67c613040e8b9e52fc')
 
 prepare() {
   mkdir -p build-${CARCH}${_variant}
   
   cd ${srcdir}/${_basename}-${pkgver}
-  patch -p1 -i ${srcdir}/hack-fix-paths.patch
+  patch -p1 -i ${srcdir}/use-mingw-w64-defines.patch
 }
 
 build() {

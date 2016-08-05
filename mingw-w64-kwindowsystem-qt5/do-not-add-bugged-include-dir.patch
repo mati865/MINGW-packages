@@ -2,9 +2,9 @@ Probably a CMake bug
 ${KDE_INSTALL_INCLUDEDIR_KF5}                         =  include/KF5
 ${CMAKE_INSTALL_PREFIX}/${KDE_INSTALL_INCLUDEDIR_KF5} = /mingw64/include/KF5
 
-Before patch: INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include/KF5/KWindowSystem;/mingw64/include/KF5;${_IMPORT_PREFIX}/include/KF5"
-When importing F5::WindowSystem there is an error about non-existent path "/mingw64/include/KF5"
-However ${_IMPORT_PREFIX}/include/KF5 is fine
+Before patch INTERFACE_INCLUDE_DIRECTORIES: "${_IMPORT_PREFIX}/include/KF5/KWindowSystem;/mingw64/include/KF5;${_IMPORT_PREFIX}/include/KF5"
+When importing KF5::WindowSystem there is an error about non-existent path "/mingw64/include/KF5"
+However ${_IMPORT_PREFIX}/include/KF5 is fines
 This patch prevents "/mingw64/include/KF5" from being added
 
 diff -Naur kwindowsystem-5.23.0.orig/src/CMakeLists.txt kwindowsystem-5.23.0/src/CMakeLists.txt
