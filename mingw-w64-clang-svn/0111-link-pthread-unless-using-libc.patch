@@ -1,0 +1,36 @@
+From 3187c9dc7251126f284fa3551c6c407d6751f7f5 Mon Sep 17 00:00:00 2001
+From: Mateusz Mikula <mati865@gmail.com>
+Date: Thu, 2 Feb 2017 12:33:51 +0100
+Subject: [PATCH] link pthread unless using libc++
+
+---
+ lib/Driver/Tools.cpp | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/lib/Driver/Tools.cpp b/lib/Driver/Tools.cpp
+index 910b5106e9..8c560f8411 100644
+--- a/lib/Driver/Tools.cpp
++++ b/lib/Driver/Tools.cpp
+@@ -5419,7 +5419,8 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
+   Args.AddLastArg(CmdArgs, options::OPT_fno_operator_names);
+   // Emulated TLS is enabled by default on Android, and can be enabled manually
+   // with -femulated-tls.
+-  bool EmulatedTLSDefault = Triple.isAndroid() || Triple.isWindowsCygwinEnvironment();
++  bool EmulatedTLSDefault = Triple.isAndroid() || Triple.isWindowsCygwinEnvironment()
++                            || getToolChain().getTriple().isWindowsGNUEnvironment();
+   if (Args.hasFlag(options::OPT_femulated_tls, options::OPT_fno_emulated_tls,
+                    EmulatedTLSDefault))
+     CmdArgs.push_back("-femulated-tls");
+@@ -11411,7 +11412,8 @@ void MinGW::Linker::ConstructJob(Compilation &C, const JobAction &JA,
+       if (Args.hasArg(options::OPT_pg))
+         CmdArgs.push_back("-lgmon");
+ 
+-      if (Args.hasArg(options::OPT_pthread))
++      if (!Args.hasArg(options::OPT_no_pthread) &&
+++          (TC.GetCXXStdlibType(Args) != ToolChain::CST_Libcxx))
+         CmdArgs.push_back("-lpthread");
+ 
+       // add system libraries
+-- 
+2.11.0.windows.3
+
