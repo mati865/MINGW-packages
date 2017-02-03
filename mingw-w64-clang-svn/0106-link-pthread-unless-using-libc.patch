@@ -1,7 +1,7 @@
-From 3187c9dc7251126f284fa3551c6c407d6751f7f5 Mon Sep 17 00:00:00 2001
+From 7d22ee341293af8253e7381e437d505ae8c6ba29 Mon Sep 17 00:00:00 2001
 From: Mateusz Mikula <mati865@gmail.com>
 Date: Thu, 2 Feb 2017 12:33:51 +0100
-Subject: [PATCH] link pthread unless using libc++
+Subject: [PATCH 6/8] link pthread unless using libc++
 
 ---
  lib/Driver/Tools.cpp | 6 ++++--

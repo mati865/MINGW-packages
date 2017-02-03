@@ -1,7 +1,7 @@
-From bce519bc1b0183e627fbf24f3abdf2f2570b5b14 Mon Sep 17 00:00:00 2001
+From 6e347861b921e4856d354f6b92945693181aa8de Mon Sep 17 00:00:00 2001
 From: Mateusz Mikula <mati865@gmail.com>
 Date: Thu, 2 Feb 2017 12:21:45 +0100
-Subject: [PATCH] fix libclang name for mingw
+Subject: [PATCH 3/8] fix libclang name for mingw
 
 ---
  tools/libclang/CMakeLists.txt | 2 +-

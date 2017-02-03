@@ -27,7 +27,7 @@ pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}-svn"
          "${MINGW_PACKAGE_PREFIX}-llvm-svn"
         #  "${MINGW_PACKAGE_PREFIX}-lldb-svn"
         )
-pkgver=66254.4fd7248cd9
+pkgver=66263.1cce0d7b64
 pkgrel=1
 pkgdesc="C language family frontend for LLVM (svn) (mingw-w64)"
 arch=('any')
@@ -57,15 +57,13 @@ source=("llvm"::"git+http://llvm.org/git/llvm.git"
         "0004-Globally-provide-DESTDIR-for-all-platforms.patch"
         "0005-not-install-msvc-files.patch"
         "0006-llvm-config-don-t-use-versioned-shared-lib-on-win32.patch"
-        "0103-mingw-w64-enable-support-for-__declspec-selectany.patch"
-        "0104-mingw-w64-support-static-builds-of-libc.patch"
-        "0105-mingw-enable-static-libclang.patch"
-        "0106-fix-libclang-name-for-mingw.patch"
-        "0107-dont-create-cl-mingw.patch"
-        "0108-don-t-use-GCC-headers.patch"
-        "0109-Set-the-x86-arch-name-to-i686-for-mingw-w64.patch"
-        "0110-enable-support-for-float128.patch"
-        "0111-link-pthread-unless-using-libc.patch"
+        "0101-mingw-w64-enable-support-for-__declspec-selectany.patch"
+        "0102-Allow-build-static-clang-library-for-mingw.patch"
+        "0103-fix-libclang-name-for-mingw.patch"
+        "0104-don-t-use-GCC-headers.patch"
+        "0105-Set-the-x86-arch-name-to-i686-for-mingw-w64.patch"
+        "0106-link-pthread-unless-using-libc.patch"
+        "0107-enable-__float128-for-X86-MinGW.patch"
         "0201-mingw-w64-__udivdi3-mangle-hack.patch"
         "0202-mingw-fixes-for-compiler-rt.patch"
         "0301-COFF-gnu-driver-support.patch"
@@ -102,17 +100,13 @@ sha256sums=('SKIP'
             'bccdb99553424121927b3f82086efb2adeee230f18944504ddd93d2d72371d5c'
             'c840f4e2286385c4ab3503c02976fd2459516fdc05e44f702d648afaaaebd97f'
             'c541d738a2bfffbe41923a593e9d9be2836120eb3aca01f886502fcb4f3f9314'
-            '31e0f242f4463cadc1b867a87b38e4c2f689e70fdd6d64a44dcc3784f352b20f'
-            'ba703d3d0f100d02ba01501319e6ec29565a199176fb20d11f89fa31b479df5f'
-            'b00b3e2395d9262c999c6865da59837f0712454803e0d4e776181267df89f083'
-            '0c570da0d1357cfef276da685b67118d48a6a6f5a0fc4e281c2925c10f8be9ca'
-            'd929ef7c4c18c65f7a48156ff3ca38453334822008f2a5f57dd3f1d7c61b6723'
-            'e4eb950f05eaf0fc30b8b8cb0a6ec02a2a60a13ae7e624aa992bb64531c6bf45'
-            'b03cfc7ebbbfb847e88ae3569d9dcafb01f179b06f1312de29fbd5b7cf906617'
-            'bfd38b1299180d8c4a3b8479c4ba15fc30219c83a5994ad6adcdf2c338af4520'
-            'e9cf6bd5a86fb1922f5dd358d3d79ad42081e19cca72fdbbc06d8b300a26672d'
-            '7abd9894abe9d28da975fadbad27478c308ed1455a5130091ad0ffd0351bfa52'
-            '64c394e09cf11addc3be514e2b0e73e27492bdfddb38fb7aded3547c85dbcada'
+            'a2ecb1357a63b089d1533fdf90674dbdaee920281b5e44f9e1b52bfe122ef1e9'
+            'ba1c54de6c7ad8e9109faa1b469a95be0286f8ce72192aff0b4de2a83bd670f8'
+            'd6048c3dd28236ed066f5a2edeeec505845a48a755b0573b89195143079dafda'
+            'bc89322040841ca1995235d8dbe71d6b183af3e60ead7a587764397c791ce04b'
+            '61f52a89a6181bb7cc331c3566d88baacab2c9ca62da68c60ab46500f3c3b3dc'
+            '08383ccf50c049c1d0f517f24f72dd59095a8724c6f0e97348db12476f9d8f15'
+            '8f5f7a4a1127f6db15734c80498417325031ab6026a0da69551dd63ef2d02e75'
             'fb1ef06b26e88d37d52c3e0b3b261089e92bb7c08231ec8fa234465fdbdab308'
             'c19a3e49f692eba9143bb67c39a9e6df33fa604d85b0b7834d99cdd58a28d23a'
             '852d55907b469739fca96b043e41c596824ad9d933268ce65a82100b975e91fb'
@@ -165,13 +159,13 @@ prepare() {
   # gitam_mkpkg "${srcdir}"/0041-libcxx-add-support-for-mingw-w64.patch
 
   cd "${srcdir}"/clang
-  gitam_mkpkg "${srcdir}"/0103-mingw-w64-enable-support-for-__declspec-selectany.patch
-  gitam_mkpkg "${srcdir}"/0105-mingw-enable-static-libclang.patch
-  gitam_mkpkg "${srcdir}"/0106-fix-libclang-name-for-mingw.patch
-  gitam_mkpkg "${srcdir}"/0107-dont-create-cl-mingw.patch
-  gitam_mkpkg "${srcdir}"/0108-don-t-use-GCC-headers.patch
-  gitam_mkpkg "${srcdir}"/0109-Set-the-x86-arch-name-to-i686-for-mingw-w64.patch
-  gitam_mkpkg "${srcdir}"/0111-link-pthread-unless-using-libc.patch
+  gitam_mkpkg "${srcdir}"/0101-mingw-w64-enable-support-for-__declspec-selectany.patch
+  gitam_mkpkg "${srcdir}"/0102-Allow-build-static-clang-library-for-mingw.patch
+  gitam_mkpkg "${srcdir}"/0103-fix-libclang-name-for-mingw.patch
+  gitam_mkpkg "${srcdir}"/0104-don-t-use-GCC-headers.patch
+  gitam_mkpkg "${srcdir}"/0105-Set-the-x86-arch-name-to-i686-for-mingw-w64.patch
+  gitam_mkpkg "${srcdir}"/0106-link-pthread-unless-using-libc.patch
+  gitam_mkpkg "${srcdir}"/0107-enable-__float128-for-X86-MinGW.patch
 
   cd "${srcdir}"/llvm
 
@@ -193,9 +187,8 @@ prepare() {
 build() {
   cd "${srcdir}"
 
-  # [[ -d build-${CARCH} ]] && rm -rf build-${CARCH}
-  # mkdir build-${CARCH} && 
-  cd build-${CARCH}
+  [[ -d build-${CARCH} ]] && rm -rf build-${CARCH}
+  mkdir build-${CARCH} && cd build-${CARCH}
 
   local -a extra_config
 
@@ -262,11 +255,12 @@ build() {
   sed -i.orig '/\(compiler-rt\|libcxxabi\|libcxx\|libunwind\)\/cmake_install.cmake/d' projects/cmake_install.cmake
 }
 
-#check() {
-#  cd "${srcdir}"/build-${CARCH}
-#  # Remove || true once testcase doesn't cause failures.
-#  make check || true
-#}
+check() {
+  cd "${srcdir}"/build-${CARCH}
+  # Remove || true once testcase doesn't cause failures.
+  make check || true
+  make check-clang || true
+}
 
 package_llvm-svn() {
   pkgdesc="Low Level Virtual Machine (svn) (mingw-w64)"
@@ -378,6 +372,9 @@ package_clang-svn() {
 
   cd "${srcdir}/llvm"
   make -C ../build-${CARCH}/tools/clang DESTDIR="${pkgdir}" install
+
+  # Install static clang library ..
+  cp ../build-${CARCH}/lib/libclang.a ${pkgdir}${MINGW_PREFIX}/lib/
 }
 
 package_clang-analyzer-svn() {

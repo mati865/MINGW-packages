@@ -1,0 +1,32 @@
+From 1cce0d7b64c5a10089cf3bb099c9b0aee816b29d Mon Sep 17 00:00:00 2001
+From: Mateusz Mikula <mati865@gmail.com>
+Date: Fri, 3 Feb 2017 11:04:25 +0100
+Subject: [PATCH 7/8] enable __float128 for X86 MinGW
+
+---
+ lib/Basic/Targets.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/lib/Basic/Targets.cpp b/lib/Basic/Targets.cpp
+index 7e311b0ac7..01d7c7527b 100644
+--- a/lib/Basic/Targets.cpp
++++ b/lib/Basic/Targets.cpp
+@@ -4701,6 +4701,7 @@ public:
+       : WindowsX86_64TargetInfo(Triple, Opts) {
+     LongDoubleWidth = LongDoubleAlign = 64;
+     LongDoubleFormat = &llvm::APFloat::IEEEdouble();
++    this->HasFloat128 = true;
+   }
+   void getTargetDefines(const LangOptions &Opts,
+                         MacroBuilder &Builder) const override {
+@@ -4720,6 +4721,7 @@ public:
+     // with x86 FP ops. Weird.
+     LongDoubleWidth = LongDoubleAlign = 128;
+     LongDoubleFormat = &llvm::APFloat::x87DoubleExtended();
++    this->HasFloat128 = true;
+   }
+ 
+   void getTargetDefines(const LangOptions &Opts,
+-- 
+2.11.0.windows.3
+

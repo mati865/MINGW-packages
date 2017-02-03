@@ -1,7 +1,7 @@
-From 9ac0dfb7a99484695156f1187080f1dc827866bd Mon Sep 17 00:00:00 2001
+From 94da8c134b5bb2869d0c455e6dedca6faa3fdf61 Mon Sep 17 00:00:00 2001
 From: Mateusz Mikula <mati865@gmail.com>
 Date: Thu, 2 Feb 2017 12:26:19 +0100
-Subject: [PATCH] don't use GCC headers
+Subject: [PATCH 4/8] don't use GCC headers
 
 ---
  lib/Driver/MinGWToolChain.cpp | 2 ++
