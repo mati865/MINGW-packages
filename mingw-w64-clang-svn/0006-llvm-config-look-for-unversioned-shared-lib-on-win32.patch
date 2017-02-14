@@ -1,7 +1,7 @@
 From cccec8226592a0a635a4f00d5bf6f72803616e38 Mon Sep 17 00:00:00 2001
 From: Mateusz Mikula <mati865@gmail.com>
 Date: Thu, 2 Feb 2017 11:48:25 +0100
-Subject: [PATCH 6/6] llvm-config: don't use versioned shared lib on win32
+Subject: [PATCH 6/6] llvm-config: look for unversioned shared lib on win32
 
 ---
  tools/llvm-config/llvm-config.cpp | 8 +++++---

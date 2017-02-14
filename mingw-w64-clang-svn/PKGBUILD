@@ -27,7 +27,7 @@ pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}-svn"
          "${MINGW_PACKAGE_PREFIX}-llvm-svn"
         #  "${MINGW_PACKAGE_PREFIX}-lldb-svn"
         )
-pkgver=66263.1cce0d7b64
+pkgver=66390.8f17f21d39
 pkgrel=1
 pkgdesc="C language family frontend for LLVM (svn) (mingw-w64)"
 arch=('any')
@@ -56,7 +56,7 @@ source=("llvm"::"git+http://llvm.org/git/llvm.git"
         "0003-Fix-GetHostTriple-for-mingw-w64-in-msys.patch"
         "0004-Globally-provide-DESTDIR-for-all-platforms.patch"
         "0005-not-install-msvc-files.patch"
-        "0006-llvm-config-don-t-use-versioned-shared-lib-on-win32.patch"
+        "0006-llvm-config-look-for-unversioned-shared-lib-on-win32.patch"
         "0101-mingw-w64-enable-support-for-__declspec-selectany.patch"
         "0102-Allow-build-static-clang-library-for-mingw.patch"
         "0103-fix-libclang-name-for-mingw.patch"
@@ -64,6 +64,7 @@ source=("llvm"::"git+http://llvm.org/git/llvm.git"
         "0105-Set-the-x86-arch-name-to-i686-for-mingw-w64.patch"
         "0106-link-pthread-unless-using-libc.patch"
         "0107-enable-__float128-for-X86-MinGW.patch"
+        "0108-Don-t-create-cl-executable-for-mingw.patch"
         "0201-mingw-w64-__udivdi3-mangle-hack.patch"
         "0202-mingw-fixes-for-compiler-rt.patch"
         "0301-COFF-gnu-driver-support.patch"
@@ -99,14 +100,15 @@ sha256sums=('SKIP'
             'aceffb61d57c7c01bc2d9d5461f961df26cffdffaaabb8dda9f219acfe59c77a'
             'bccdb99553424121927b3f82086efb2adeee230f18944504ddd93d2d72371d5c'
             'c840f4e2286385c4ab3503c02976fd2459516fdc05e44f702d648afaaaebd97f'
-            'c541d738a2bfffbe41923a593e9d9be2836120eb3aca01f886502fcb4f3f9314'
+            'f06f57af203811f6a4c62ac3f1e4545628db13185f5e7d3225d4b1104ca69be1'
             'a2ecb1357a63b089d1533fdf90674dbdaee920281b5e44f9e1b52bfe122ef1e9'
-            'ba1c54de6c7ad8e9109faa1b469a95be0286f8ce72192aff0b4de2a83bd670f8'
+            'c296a8740093a18d33e7cf550414aeb4ae75ee43c6b4ebf17f7ac10d24f5f86a'
             'd6048c3dd28236ed066f5a2edeeec505845a48a755b0573b89195143079dafda'
             'bc89322040841ca1995235d8dbe71d6b183af3e60ead7a587764397c791ce04b'
             '61f52a89a6181bb7cc331c3566d88baacab2c9ca62da68c60ab46500f3c3b3dc'
             '08383ccf50c049c1d0f517f24f72dd59095a8724c6f0e97348db12476f9d8f15'
-            '8f5f7a4a1127f6db15734c80498417325031ab6026a0da69551dd63ef2d02e75'
+            'acc3391ad0802aa3486cc8afe0e85ff334724b70d869149be6351848b0d0e74d'
+            '45c69a14702be3554ae635b79cb37f7e1503d80af550a64b1b8ed6e641318c3a'
             'fb1ef06b26e88d37d52c3e0b3b261089e92bb7c08231ec8fa234465fdbdab308'
             'c19a3e49f692eba9143bb67c39a9e6df33fa604d85b0b7834d99cdd58a28d23a'
             '852d55907b469739fca96b043e41c596824ad9d933268ce65a82100b975e91fb'
@@ -141,7 +143,7 @@ prepare() {
   gitam_mkpkg "${srcdir}"/0005-not-install-msvc-files.patch
   # FIXME:
   # Wrong libs for shared linkage, probably https://github.com/llvm-mirror/llvm/commit/23d0163e617322d0a2bb815f9443c8c94fd920c3
-  gitam_mkpkg "${srcdir}"/0006-llvm-config-don-t-use-versioned-shared-lib-on-win32.patch
+  gitam_mkpkg "${srcdir}"/0006-llvm-config-look-for-unversioned-shared-lib-on-win32.patch
 
   # # Fix docs installation directory
   # sed -i 's:$(PROJ_prefix)/docs/llvm:$(PROJ_prefix)/share/doc/llvm:' \
@@ -166,6 +168,7 @@ prepare() {
   gitam_mkpkg "${srcdir}"/0105-Set-the-x86-arch-name-to-i686-for-mingw-w64.patch
   gitam_mkpkg "${srcdir}"/0106-link-pthread-unless-using-libc.patch
   gitam_mkpkg "${srcdir}"/0107-enable-__float128-for-X86-MinGW.patch
+  gitam_mkpkg "${srcdir}"/0108-Don-t-create-cl-executable-for-mingw.patch
 
   cd "${srcdir}"/llvm
 
@@ -255,12 +258,12 @@ build() {
   sed -i.orig '/\(compiler-rt\|libcxxabi\|libcxx\|libunwind\)\/cmake_install.cmake/d' projects/cmake_install.cmake
 }
 
-check() {
-  cd "${srcdir}"/build-${CARCH}
-  # Remove || true once testcase doesn't cause failures.
-  make check || true
-  make check-clang || true
-}
+# check() {
+#   cd "${srcdir}"/build-${CARCH}
+#   # Remove || true once testcase doesn't cause failures.
+#   # make check || true
+#   make check-clang || true
+# }
 
 package_llvm-svn() {
   pkgdesc="Low Level Virtual Machine (svn) (mingw-w64)"
