@@ -19,7 +19,7 @@ pkgbase=mingw-w64-${_realname}-svn
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}-svn"
          "${MINGW_PACKAGE_PREFIX}-${_realname}-analyzer-svn"
          "${MINGW_PACKAGE_PREFIX}-${_realname}-tools-extra-svn"
-        #  "${MINGW_PACKAGE_PREFIX}-compiler-rt-svn"
+         "${MINGW_PACKAGE_PREFIX}-compiler-rt-svn"
         #  "${MINGW_PACKAGE_PREFIX}-libc++abi-svn"
         #  "${MINGW_PACKAGE_PREFIX}-libc++-svn"
         #  "${MINGW_PACKAGE_PREFIX}-libunwind-svn"
@@ -27,7 +27,7 @@ pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}-svn"
          "${MINGW_PACKAGE_PREFIX}-llvm-svn"
         #  "${MINGW_PACKAGE_PREFIX}-lldb-svn"
         )
-pkgver=66390.8f17f21d39
+pkgver=66413.8aec7a992c
 pkgrel=1
 pkgdesc="C language family frontend for LLVM (svn) (mingw-w64)"
 arch=('any')
@@ -66,7 +66,7 @@ source=("llvm"::"git+http://llvm.org/git/llvm.git"
         "0107-enable-__float128-for-X86-MinGW.patch"
         "0108-Don-t-create-cl-executable-for-mingw.patch"
         "0201-mingw-w64-__udivdi3-mangle-hack.patch"
-        "0202-mingw-fixes-for-compiler-rt.patch"
+        "0202-compiler-rt-fix-mingw-build.patch"
         "0301-COFF-gnu-driver-support.patch"
         "0302-add-install-target-for-the-lld-tool.patch"
         "0303-Fix-LLVM_LINK_LLVM_DYLIB-build.patch"
@@ -110,7 +110,7 @@ sha256sums=('SKIP'
             'acc3391ad0802aa3486cc8afe0e85ff334724b70d869149be6351848b0d0e74d'
             '45c69a14702be3554ae635b79cb37f7e1503d80af550a64b1b8ed6e641318c3a'
             'fb1ef06b26e88d37d52c3e0b3b261089e92bb7c08231ec8fa234465fdbdab308'
-            'c19a3e49f692eba9143bb67c39a9e6df33fa604d85b0b7834d99cdd58a28d23a'
+            'fe57cc50f74ad39975f1a489b6150cb0b11bffe370845069446f26f12e1b85fa'
             '852d55907b469739fca96b043e41c596824ad9d933268ce65a82100b975e91fb'
             '0f2cf89298303911a20e9cee7208ed418d91cf700af611a142dc735c708e1435'
             'ffbce44f0787dd3defa708f9637353856d70d4b0b888121dd600c6b269b167e1'
@@ -154,8 +154,13 @@ prepare() {
   #   cmake/modules/Makefile
 
   cd "${srcdir}"/compiler-rt
+  gitam_mkpkg "${srcdir}"/0201-mingw-w64-__udivdi3-mangle-hack.patch
+  gitam_mkpkg "${srcdir}"/0202-compiler-rt-fix-mingw-build.patch
 
   cd "${srcdir}"/lld
+  # need to be recreated
+  # gitam_mkpkg "${srcdir}"/0301-COFF-gnu-driver-support.patch
+  # gitam_mkpkg "${srcdir}"/0302-add-install-target-for-the-lld-tool.patch
 
   cd "${srcdir}"/libcxx
   # gitam_mkpkg "${srcdir}"/0041-libcxx-add-support-for-mingw-w64.patch
@@ -180,7 +185,7 @@ prepare() {
   mv "${srcdir}/clang-tools-extra" tools/clang/tools/extra
   # mv "${srcdir}/lld"               tools/lld
   # mv "${srcdir}/lldb"              tools/lldb
-  # mv "${srcdir}/compiler-rt"       projects/compiler-rt
+  mv "${srcdir}/compiler-rt"       projects/compiler-rt
   # mv "${srcdir}/libcxxabi"         projects/libcxxabi
   # mv "${srcdir}/libcxx"            projects/libcxx
   # mv "${srcdir}/libunwind"         projects/libunwind
@@ -261,7 +266,7 @@ build() {
 # check() {
 #   cd "${srcdir}"/build-${CARCH}
 #   # Remove || true once testcase doesn't cause failures.
-#   # make check || true
+#   make check || true
 #   make check-clang || true
 # }
 
