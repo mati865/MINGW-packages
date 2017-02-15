@@ -1,0 +1,144 @@
+From 71ac780a57ec7760fd38ff9909aafb1f43cf9d39 Mon Sep 17 00:00:00 2001
+From: Mateusz Mikula <mati865@gmail.com>
+Date: Thu, 16 Feb 2017 00:37:27 +0100
+Subject: [PATCH] hacky fixes to get lldb building
+
+---
+ cmake/LLDBDependencies.cmake         |  5 +++++
+ include/lldb/Host/windows/PosixApi.h | 14 +++++++++-----
+ source/Host/windows/Windows.cpp      |  5 +++++
+ tools/lldb-mi/MIDataTypes.h          |  7 +++++++
+ tools/lldb-mi/Platform.h             |  4 ++++
+ 5 files changed, 30 insertions(+), 5 deletions(-)
+
+diff --git a/cmake/LLDBDependencies.cmake b/cmake/LLDBDependencies.cmake
+index 55ce37908..4fa47cfb6 100644
+--- a/cmake/LLDBDependencies.cmake
++++ b/cmake/LLDBDependencies.cmake
+@@ -6,6 +6,11 @@ if ( CMAKE_SYSTEM_NAME MATCHES "Windows" )
+     ws2_32
+     rpcrt4
+     )
++  if (MINGW)
++    list(APPEND LLDB_SYSTEM_LIBS
++      dbghelp
++    )
++  endif ()
+ endif ()
+ 
+ if (NOT LLDB_DISABLE_LIBEDIT)
+diff --git a/include/lldb/Host/windows/PosixApi.h b/include/lldb/Host/windows/PosixApi.h
+index de70266a5..004bbc5a9 100644
+--- a/include/lldb/Host/windows/PosixApi.h
++++ b/include/lldb/Host/windows/PosixApi.h
+@@ -73,21 +73,25 @@ typedef uint32_t pid_t;
+ #define S_ISDIR(mode) (((mode)&S_IFMT) == S_IFDIR)
+ #endif
+ 
+-#endif // _MSC_VER
++#elif __MINGW64_VERSION_MAJOR
++#include <sys/types.h>
++#endif
+ 
+ // Various useful posix functions that are not present in Windows.  We provide
+ // custom implementations.
++#ifndef __MINGW64_VERSION_MAJOR
+ int vasprintf(char **ret, const char *fmt, va_list ap);
++int usleep(uint32_t useconds);
++int strcasecmp(const char *s1, const char *s2);
++int strncasecmp(const char *s1, const char *s2, size_t n);
++#endif
++
+ char *strcasestr(const char *s, const char *find);
+ char *realpath(const char *name, char *resolved);
+ 
+-int usleep(uint32_t useconds);
+ char *basename(char *path);
+ char *dirname(char *path);
+ 
+-int strcasecmp(const char *s1, const char *s2);
+-int strncasecmp(const char *s1, const char *s2, size_t n);
+-
+ // empty functions
+ inline int posix_openpt(int flag) { LLVM_BUILTIN_UNREACHABLE; }
+ 
+diff --git a/source/Host/windows/Windows.cpp b/source/Host/windows/Windows.cpp
+index 9d0e70e6d..e8135d254 100644
+--- a/source/Host/windows/Windows.cpp
++++ b/source/Host/windows/Windows.cpp
+@@ -43,6 +43,7 @@ bool wideToUtf8(const wchar_t *wide, char *buf, size_t bufSize) {
+ }
+ }
+ 
++#ifndef __MINGW64_VERSION_MAJOR
+ int vasprintf(char **ret, const char *fmt, va_list ap) {
+   char *buf;
+   int len;
+@@ -69,6 +70,7 @@ int vasprintf(char **ret, const char *fmt, va_list ap) {
+   va_end(ap2);
+   return len;
+ }
++#endif
+ 
+ char *strcasestr(const char *s, const char *find) {
+   char c, sc;
+@@ -194,8 +196,10 @@ char *dirname(char *path) {
+   return path;
+ }
+ 
++#ifndef __MINGW64_VERSION_MAJOR
+ int strcasecmp(const char *s1, const char *s2) { return stricmp(s1, s2); }
+ 
++
+ int strncasecmp(const char *s1, const char *s2, size_t n) {
+   return strnicmp(s1, s2, n);
+ }
+@@ -204,6 +208,7 @@ int usleep(uint32_t useconds) {
+   Sleep(useconds / 1000);
+   return 0;
+ }
++#endif
+ 
+ #if _MSC_VER < 1900
+ namespace lldb_private {
+diff --git a/tools/lldb-mi/MIDataTypes.h b/tools/lldb-mi/MIDataTypes.h
+index 34fe45751..5522201d6 100644
+--- a/tools/lldb-mi/MIDataTypes.h
++++ b/tools/lldb-mi/MIDataTypes.h
+@@ -40,9 +40,16 @@ const bool failure = false;
+ 
+ // Portability issues
+ #ifdef _WIN64
++# ifdef _MSC_VER
+ typedef unsigned __int64 size_t;
+ typedef __int64 MIint;
+ typedef unsigned __int64 MIuint;
++# else
++# include <stdint.h>
++typedef uint64_t size_t;
++typedef int64_t MIint;
++typedef uint64_t MIuint;
++# endif
+ #else
+ #ifdef _WIN32
+ typedef unsigned int size_t;
+diff --git a/tools/lldb-mi/Platform.h b/tools/lldb-mi/Platform.h
+index 1b6ff5549..147bb57a4 100644
+--- a/tools/lldb-mi/Platform.h
++++ b/tools/lldb-mi/Platform.h
+@@ -79,8 +79,12 @@ typedef void (*sighandler_t)(int);
+ 
+ #include <getopt.h>
+ #include <libgen.h>
++
++#ifndef __MINGW64_VERSION_MAJOR
+ #include <sys/ioctl.h>
+ #include <termios.h>
++#endif
++
+ #include <unistd.h>
+ 
+ #include <pthread.h>
+-- 
+2.11.1
+
