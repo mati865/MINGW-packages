@@ -1,17 +1,17 @@
-From 6e347861b921e4856d354f6b92945693181aa8de Mon Sep 17 00:00:00 2001
+From 180bffbe07c0c43e7f103debc8d8d777cb027096 Mon Sep 17 00:00:00 2001
 From: Mateusz Mikula <mati865@gmail.com>
 Date: Thu, 2 Feb 2017 12:21:45 +0100
-Subject: [PATCH 3/8] fix libclang name for mingw
+Subject: [PATCH 3/9] fix libclang name for mingw
 
 ---
  tools/libclang/CMakeLists.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tools/libclang/CMakeLists.txt b/tools/libclang/CMakeLists.txt
-index 673f029991..1656ca02e3 100644
+index 477e53dd15..dc2e3538fa 100644
 --- a/tools/libclang/CMakeLists.txt
 +++ b/tools/libclang/CMakeLists.txt
-@@ -78,7 +78,7 @@ if((NOT LLVM_ENABLE_PIC OR LIBCLANG_BUILD_STATIC) AND (NOT WIN32 OR MINGW))
+@@ -78,7 +78,7 @@ if((NOT LLVM_ENABLE_PIC OR LIBCLANG_BUILD_STATIC) AND (NOT MSVC))
    set(ENABLE_STATIC STATIC)
  endif()
  
@@ -21,5 +21,5 @@ index 673f029991..1656ca02e3 100644
  else()
    set(output_name "clang")
 -- 
-2.11.0.windows.3
+2.12.0
 

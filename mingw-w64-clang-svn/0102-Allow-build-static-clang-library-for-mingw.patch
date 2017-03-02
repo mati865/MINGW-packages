@@ -1,14 +1,14 @@
-From dd0633182dcc02a814ef46823cc14e58d6f3b1dc Mon Sep 17 00:00:00 2001
+From c1c93aaa9b8a903ce3f761ae2dabb20daf521f5c Mon Sep 17 00:00:00 2001
 From: Alexey Pavlov <alexpux@gmail.com>
 Date: Fri, 25 Dec 2015 20:14:51 +0100
-Subject: [PATCH 2/8] Allow build static clang library for mingw
+Subject: [PATCH 2/9] Allow build static clang library for mingw
 
 ---
  tools/libclang/CMakeLists.txt | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tools/libclang/CMakeLists.txt b/tools/libclang/CMakeLists.txt
-index 2dd6703076..673f029991 100644
+index 2dd6703076..477e53dd15 100644
 --- a/tools/libclang/CMakeLists.txt
 +++ b/tools/libclang/CMakeLists.txt
 @@ -74,7 +74,7 @@ if( LLVM_ENABLE_PIC )
@@ -21,5 +21,5 @@ index 2dd6703076..673f029991 100644
  endif()
  
 -- 
-2.11.0.windows.3
+2.12.0
 

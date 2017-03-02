@@ -1,7 +1,7 @@
-From cc49bb18563f44c00484796ad1d6d604245ea053 Mon Sep 17 00:00:00 2001
+From 28f3e2bd27cb8e3f7a182a17d45af72303a47862 Mon Sep 17 00:00:00 2001
 From: Alexey Pavlov <alexpux@gmail.com>
 Date: Fri, 25 Dec 2015 20:14:51 +0100
-Subject: [PATCH 8/8] Don't create cl executable for mingw
+Subject: [PATCH 8/9] Don't create cl executable for mingw
 
 ---
  tools/driver/CMakeLists.txt | 2 +-
@@ -21,5 +21,5 @@ index f6e26fa11f..901b6d62e4 100644
    endif()
  endif()
 -- 
-2.11.0.windows.3
+2.12.0
 

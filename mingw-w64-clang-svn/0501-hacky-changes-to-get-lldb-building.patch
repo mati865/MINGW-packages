@@ -1,27 +1,28 @@
-From 71ac780a57ec7760fd38ff9909aafb1f43cf9d39 Mon Sep 17 00:00:00 2001
+From 996d86dae1de33fbd1519c73def628d35c0fa9bc Mon Sep 17 00:00:00 2001
 From: Mateusz Mikula <mati865@gmail.com>
 Date: Thu, 16 Feb 2017 00:37:27 +0100
-Subject: [PATCH] hacky fixes to get lldb building
+Subject: [PATCH] hacky changes to get lldb building
 
 ---
- cmake/LLDBDependencies.cmake         |  5 +++++
+ cmake/LLDBDependencies.cmake         |  6 ++++++
  include/lldb/Host/windows/PosixApi.h | 14 +++++++++-----
  source/Host/windows/Windows.cpp      |  5 +++++
  tools/lldb-mi/MIDataTypes.h          |  7 +++++++
  tools/lldb-mi/Platform.h             |  4 ++++
- 5 files changed, 30 insertions(+), 5 deletions(-)
+ 5 files changed, 31 insertions(+), 5 deletions(-)
 
 diff --git a/cmake/LLDBDependencies.cmake b/cmake/LLDBDependencies.cmake
-index 55ce37908..4fa47cfb6 100644
+index 55ce37908..e1257744e 100644
 --- a/cmake/LLDBDependencies.cmake
 +++ b/cmake/LLDBDependencies.cmake
-@@ -6,6 +6,11 @@ if ( CMAKE_SYSTEM_NAME MATCHES "Windows" )
+@@ -6,6 +6,12 @@ if ( CMAKE_SYSTEM_NAME MATCHES "Windows" )
      ws2_32
      rpcrt4
      )
 +  if (MINGW)
 +    list(APPEND LLDB_SYSTEM_LIBS
 +      dbghelp
++      psapi
 +    )
 +  endif ()
  endif ()
@@ -140,5 +141,5 @@ index 1b6ff5549..147bb57a4 100644
  
  #include <pthread.h>
 -- 
-2.11.1
+2.12.0
 

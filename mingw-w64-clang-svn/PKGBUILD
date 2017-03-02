@@ -20,14 +20,14 @@ pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}-svn"
          "${MINGW_PACKAGE_PREFIX}-${_realname}-analyzer-svn"
          "${MINGW_PACKAGE_PREFIX}-${_realname}-tools-extra-svn"
          "${MINGW_PACKAGE_PREFIX}-compiler-rt-svn"
-        #  "${MINGW_PACKAGE_PREFIX}-libc++abi-svn"
-        #  "${MINGW_PACKAGE_PREFIX}-libc++-svn"
-        #  "${MINGW_PACKAGE_PREFIX}-libunwind-svn"
-        #  "${MINGW_PACKAGE_PREFIX}-lld-svn"
+         #"${MINGW_PACKAGE_PREFIX}-libc++abi-svn"
+         #"${MINGW_PACKAGE_PREFIX}-libc++-svn"
+         #"${MINGW_PACKAGE_PREFIX}-libunwind-svn"
+         #"${MINGW_PACKAGE_PREFIX}-lld-svn"
          "${MINGW_PACKAGE_PREFIX}-llvm-svn"
          "${MINGW_PACKAGE_PREFIX}-lldb-svn"
         )
-pkgver=66413.8aec7a992c
+pkgver=66634.48de642acc
 pkgrel=1
 pkgdesc="C language family frontend for LLVM (svn) (mingw-w64)"
 arch=('any')
@@ -62,17 +62,17 @@ source=("llvm"::"git+http://llvm.org/git/llvm.git"
         "0103-fix-libclang-name-for-mingw.patch"
         "0104-don-t-use-GCC-headers.patch"
         "0105-Set-the-x86-arch-name-to-i686-for-mingw-w64.patch"
-        "0106-link-pthread-unless-using-libc.patch"
+        "0106-link-pthread-with-mingw.patch"
         "0107-enable-__float128-for-X86-MinGW.patch"
         "0108-Don-t-create-cl-executable-for-mingw.patch"
+        "0109-use-emulated-tls-with-mingw.patch"
         "0201-mingw-w64-__udivdi3-mangle-hack.patch"
         "0202-compiler-rt-fix-mingw-build.patch"
         "0301-COFF-gnu-driver-support.patch"
         "0302-add-install-target-for-the-lld-tool.patch"
-        "0303-Fix-LLVM_LINK_LLVM_DYLIB-build.patch"
         "0401-mingw-w64-hack-and-slash-fixes-for-libc.patch"
         "0402-fix-compilation-with-gcc.patch"
-        "0501-hacky-fixes-to-get-lldb-building.patch"
+        "0501-hacky-changes-to-get-lldb-building.patch"
         "0601-libunwind-add-support-for-mingw-w64.patch")
 
 # Some patch notes :)
@@ -100,23 +100,23 @@ sha256sums=('SKIP'
             'bccdb99553424121927b3f82086efb2adeee230f18944504ddd93d2d72371d5c'
             'c840f4e2286385c4ab3503c02976fd2459516fdc05e44f702d648afaaaebd97f'
             'f06f57af203811f6a4c62ac3f1e4545628db13185f5e7d3225d4b1104ca69be1'
-            'a2ecb1357a63b089d1533fdf90674dbdaee920281b5e44f9e1b52bfe122ef1e9'
-            'c296a8740093a18d33e7cf550414aeb4ae75ee43c6b4ebf17f7ac10d24f5f86a'
-            'd6048c3dd28236ed066f5a2edeeec505845a48a755b0573b89195143079dafda'
-            'bc89322040841ca1995235d8dbe71d6b183af3e60ead7a587764397c791ce04b'
-            '61f52a89a6181bb7cc331c3566d88baacab2c9ca62da68c60ab46500f3c3b3dc'
-            '08383ccf50c049c1d0f517f24f72dd59095a8724c6f0e97348db12476f9d8f15'
-            'acc3391ad0802aa3486cc8afe0e85ff334724b70d869149be6351848b0d0e74d'
-            '45c69a14702be3554ae635b79cb37f7e1503d80af550a64b1b8ed6e641318c3a'
+            'afdd708e2431874da4e03d9f51848840ec30ef64b4d440c8dfd50446b2f5ce1a'
+            '8ba3968939f9a7c6a51849aaf1ab6126f85aa612349570b3644f855929d496fc'
+            '1740ffa1d23fdee2b147a46cfed4d186bf7d3dc626bb3a1d3ca925147895a2d4'
+            'e8c8ebbcc7353548974e640b76bfe13d6b89afc832066e0d7156fe242b561a93'
+            '066e61c097fcad202b3b4f26dbe667719a9f5ae872837250629d69fe06bd1af1'
+            'cae561cb643daeb68e9ec2716928ba79b459ec2064829e54ecd1edcc378d293b'
+            '8a636174bff1a05872777b935e27c15c3b87683b57c4277de0d1e9ecc1ca5548'
+            'f2931ac1ebcc33faa1fa320ebe76143baf9d7635f4819e0f9e37924e70f30d39'
+            '9f9a12749869bb6c5817d6d5231417195c2e3bd80c10059b3f3e70b010159c26'
             'fb1ef06b26e88d37d52c3e0b3b261089e92bb7c08231ec8fa234465fdbdab308'
             'fe57cc50f74ad39975f1a489b6150cb0b11bffe370845069446f26f12e1b85fa'
             '852d55907b469739fca96b043e41c596824ad9d933268ce65a82100b975e91fb'
             '0f2cf89298303911a20e9cee7208ed418d91cf700af611a142dc735c708e1435'
-            'ffbce44f0787dd3defa708f9637353856d70d4b0b888121dd600c6b269b167e1'
             'd9b46363c0db63316bdaa29580c446bfe5bc7b43eb8d00f894b72415066da53e'
             '461c75905768ce9ed14db48e6c959695f8a61c58c60486c2671b6d4d10923bad'
-            '3ee7005191f837dd1c40a84890c06d6d2be2567447bc4d96786d04f0c4b61b60'
-            '0a5529a5e9871ec5252c3853f1fdda69253c1a7505837e9c45ae14bcb76a8660')
+            'f40928033636cc3b07f9a93adff40dc593c534b51914b8a3e3d6a79b7fcb1c08'
+            '1bf14bf35dcd6c21cce9245508943bfd00f97502307e1d8ec5960f9ed6193e87')
 
 pkgver_internal() {
   if [ ! -d "$1" ]; then
@@ -157,11 +157,11 @@ prepare() {
 
   cd "${srcdir}"/lld
   # need to be recreated
-  # gitam_mkpkg "${srcdir}"/0301-COFF-gnu-driver-support.patch
-  # gitam_mkpkg "${srcdir}"/0302-add-install-target-for-the-lld-tool.patch
+  #gitam_mkpkg "${srcdir}"/0301-COFF-gnu-driver-support.patch
+  #gitam_mkpkg "${srcdir}"/0302-add-install-target-for-the-lld-tool.patch
 
   cd "${srcdir}"/libcxx
-  # gitam_mkpkg "${srcdir}"/0041-libcxx-add-support-for-mingw-w64.patch
+  #gitam_mkpkg "${srcdir}"/0041-libcxx-add-support-for-mingw-w64.patch
 
   cd "${srcdir}"/clang
   gitam_mkpkg "${srcdir}"/0101-mingw-w64-enable-support-for-__declspec-selectany.patch
@@ -169,26 +169,31 @@ prepare() {
   gitam_mkpkg "${srcdir}"/0103-fix-libclang-name-for-mingw.patch
   gitam_mkpkg "${srcdir}"/0104-don-t-use-GCC-headers.patch
   gitam_mkpkg "${srcdir}"/0105-Set-the-x86-arch-name-to-i686-for-mingw-w64.patch
-  gitam_mkpkg "${srcdir}"/0106-link-pthread-unless-using-libc.patch
+  gitam_mkpkg "${srcdir}"/0106-link-pthread-with-mingw.patch
   gitam_mkpkg "${srcdir}"/0107-enable-__float128-for-X86-MinGW.patch
   gitam_mkpkg "${srcdir}"/0108-Don-t-create-cl-executable-for-mingw.patch
+  gitam_mkpkg "${srcdir}"/0109-use-emulated-tls-with-mingw.patch
 
   cd "${srcdir}"/lldb
-  gitam_mkpkg "${srcdir}"/0501-hacky-fixes-to-get-lldb-building.patch
+  gitam_mkpkg "${srcdir}"/0501-hacky-changes-to-get-lldb-building.patch
 
+  cd "${srcdir}"/libunwind
+  #gitam_mkpkg "${srcdir}"/0601-libunwind-add-support-for-mingw-w64.patch
+
+  cd "${srcdir}"/llvm
   # At the present, clang must reside inside the LLVM source code tree to build
   # See http://llvm.org/bugs/show_bug.cgi?id=4840
   rm -rf tools/clang tools/clang/tools/extra tools/lld tools/lldb projects/compiler-rt projects/libcxx \
         projects/libcxxabi projects/libunwind projects/test-suite | true
   mv "${srcdir}/clang"             tools/clang
   mv "${srcdir}/clang-tools-extra" tools/clang/tools/extra
-  # mv "${srcdir}/lld"               tools/lld
+  #mv "${srcdir}/lld"               tools/lld
   mv "${srcdir}/lldb"              tools/lldb
   mv "${srcdir}/compiler-rt"       projects/compiler-rt
-  # mv "${srcdir}/libcxxabi"         projects/libcxxabi
-  # mv "${srcdir}/libcxx"            projects/libcxx
-  # mv "${srcdir}/libunwind"         projects/libunwind
-  # mv "${srcdir}/testsuite"         projects/test-suite
+  #mv "${srcdir}/libcxxabi"         projects/libcxxabi
+  #mv "${srcdir}/libcxx"            projects/libcxx
+  #mv "${srcdir}/libunwind"         projects/libunwind
+  #mv "${srcdir}/testsuite"         projects/test-suite
 }
 
 build() {
@@ -226,7 +231,7 @@ build() {
   # "Ninja" cant install each component seperately
   # https://github.com/martine/ninja/issues/932
 
-   MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
   ${MINGW_PREFIX}/bin/cmake.exe \
     -G"MSYS Makefiles" \
     -DCMAKE_SYSTEM_IGNORE_PATH=/usr/lib \
@@ -241,7 +246,7 @@ build() {
     -DLLVM_ENABLE_FFI=ON \
     -DLLVM_ENABLE_SPHINX=ON \
     -DLLVM_BUILD_LLVM_DYLIB=ON \
-    -DLLVM_LINK_LLVM_DYLIB=OFF \
+    -DLLVM_LINK_LLVM_DYLIB=ON \
     -DCMAKE_CXX_FLAGS="-D_GNU_SOURCE" \
     -DLIBCLANG_BUILD_STATIC=ON \
     -DLIBCXX_ENABLE_SHARED=OFF \
@@ -314,6 +319,7 @@ package_libcxxabi-svn() {
   provides=("${MINGW_PACKAGE_PREFIX}-libc++abi")
   conflicts=("${MINGW_PACKAGE_PREFIX}-libc++abi")
   pkgver=$(pkgver_internal "${srcdir}"/llvm/projects/libcxxabi)
+  depends="${MINGW_PACKAGE_PREFIX}-libunwind-svn"
 
   cd "${srcdir}/llvm"
   make -C ../build-${CARCH}/projects/libcxxabi -j1 DESTDIR="${pkgdir}" install

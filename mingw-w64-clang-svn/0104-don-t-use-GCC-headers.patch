@@ -1,7 +1,7 @@
-From 94da8c134b5bb2869d0c455e6dedca6faa3fdf61 Mon Sep 17 00:00:00 2001
+From b1025201e074846b13132a7c417fa776312816fc Mon Sep 17 00:00:00 2001
 From: Mateusz Mikula <mati865@gmail.com>
 Date: Thu, 2 Feb 2017 12:26:19 +0100
-Subject: [PATCH 4/8] don't use GCC headers
+Subject: [PATCH 4/9] don't use GCC headers
 
 ---
  lib/Driver/MinGWToolChain.cpp | 2 ++
@@ -28,5 +28,5 @@ index e971869fb5..252c5e818f 100644
                     Base + Arch + llvm::sys::path::get_separator() + "include");
    addSystemInclude(DriverArgs, CC1Args, Base + "include");
 -- 
-2.11.0.windows.3
+2.12.0
 
