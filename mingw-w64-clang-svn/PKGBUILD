@@ -27,7 +27,7 @@ pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}-svn"
          "${MINGW_PACKAGE_PREFIX}-llvm-svn"
          "${MINGW_PACKAGE_PREFIX}-lldb-svn"
         )
-pkgver=66634.48de642acc
+pkgver=66662.5bfb90b246
 pkgrel=1
 pkgdesc="C language family frontend for LLVM (svn) (mingw-w64)"
 arch=('any')
@@ -167,7 +167,7 @@ prepare() {
   gitam_mkpkg "${srcdir}"/0101-mingw-w64-enable-support-for-__declspec-selectany.patch
   gitam_mkpkg "${srcdir}"/0102-Allow-build-static-clang-library-for-mingw.patch
   gitam_mkpkg "${srcdir}"/0103-fix-libclang-name-for-mingw.patch
-  gitam_mkpkg "${srcdir}"/0104-don-t-use-GCC-headers.patch
+  # gitam_mkpkg "${srcdir}"/0104-don-t-use-GCC-headers.patch
   gitam_mkpkg "${srcdir}"/0105-Set-the-x86-arch-name-to-i686-for-mingw-w64.patch
   gitam_mkpkg "${srcdir}"/0106-link-pthread-with-mingw.patch
   gitam_mkpkg "${srcdir}"/0107-enable-__float128-for-X86-MinGW.patch
