@@ -1,0 +1,229 @@
+From 35c3c0eb979b2555ae7de55de022fff092f359d3 Mon Sep 17 00:00:00 2001
+From: Mateusz Mikula <mati865@gmail.com>
+Date: Mon, 20 Mar 2017 18:33:53 +0100
+Subject: [PATCH] workarounds to build libc++ with MinGW
+
+Based on Martell's patches
+---
+ include/__config                     |  3 ++-
+ include/stdlib.h                     |  3 +++
+ include/support/win32/locale_win32.h | 27 ++++++++++++++++++++++++---
+ include/support/win32/support.h      |  5 +++--
+ lib/CMakeLists.txt                   | 12 +++++++++++-
+ src/locale.cpp                       |  2 +-
+ src/new.cpp                          |  2 +-
+ src/support/win32/locale_win32.cpp   |  4 ++++
+ src/support/win32/support.cpp        |  3 ++-
+ src/system_error.cpp                 |  2 +-
+ 10 files changed, 52 insertions(+), 11 deletions(-)
+
+diff --git a/include/__config b/include/__config
+index ee4686049..dc262f752 100644
+--- a/include/__config
++++ b/include/__config
+@@ -1063,7 +1063,8 @@ _LIBCPP_FUNC_VIS extern "C" void __sanitizer_annotate_contiguous_container(
+ #endif
+ #endif
+ 
+-#if __has_attribute(require_constant_initialization)
++// FIXME: MinGW bug?
++#if __has_attribute(require_constant_initialization) && !defined(__MINGW32__)
+ #define _LIBCPP_SAFE_STATIC __attribute__((__require_constant_initialization__))
+ #else
+ #define _LIBCPP_SAFE_STATIC
+diff --git a/include/stdlib.h b/include/stdlib.h
+index 12fd676a1..e25973b98 100644
+--- a/include/stdlib.h
++++ b/include/stdlib.h
+@@ -91,6 +91,9 @@ void *aligned_alloc(size_t alignment, size_t size);                       // C11
+ #pragma GCC system_header
+ #endif
+ 
++// FIXME
++#define _GLIBCXX_INCLUDE_NEXT_C_HEADERS 1
++
+ #include_next <stdlib.h>
+ 
+ #ifdef __cplusplus
+diff --git a/include/support/win32/locale_win32.h b/include/support/win32/locale_win32.h
+index 2f4f90f52..bebb509b3 100644
+--- a/include/support/win32/locale_win32.h
++++ b/include/support/win32/locale_win32.h
+@@ -33,16 +33,26 @@ int wctob_l( wint_t c, locale_t loc );
+ inline _LIBCPP_ALWAYS_INLINE
+ decltype(MB_CUR_MAX) MB_CUR_MAX_L( locale_t __l )
+ {
++#ifdef __MINGW32__
++  return MB_CUR_MAX;
++#else
+   return ___mb_cur_max_l_func(__l);
++#endif
+ }
+ 
+ // the *_l functions are prefixed on Windows, only available for msvcr80+, VS2005+
++#ifdef __MINGW32__
++#  define strtod_l _strtod_l
++#  define strtof_l _strtod_l
++#  define strtold_l _strtod_l
++#else
++#  define strtof_l _strtof_l
++#  define strtod_l _strtod_l
++#  define strtold_l _strtold_l
++#endif
+ #define mbtowc_l _mbtowc_l
+ #define strtoll_l _strtoi64_l
+ #define strtoull_l _strtoui64_l
+-#define strtof_l _strtof_l
+-#define strtod_l _strtod_l
+-#define strtold_l _strtold_l
+ 
+ inline _LIBCPP_INLINE_VISIBILITY
+ int
+@@ -77,7 +87,18 @@ isupper_l(int c, _locale_t loc)
+ #define iswxdigit_l _iswxdigit_l
+ #define towupper_l _towupper_l
+ #define towlower_l _towlower_l
++
++#ifndef __MINGW32__
+ #define strftime_l _strftime_l
++#else
++// Copied from libcxx/include/support/ibm/xlocale.h
++static inline
++size_t strftime_l(char *__s, size_t __size, const char *__fmt,
++                  const struct tm *__tm, locale_t locale) {
++  return strftime(__s, __size, __fmt, __tm);
++}
++#endif
++
+ #define sscanf_l( __s, __l, __f, ...) _sscanf_l( __s, __f, __l, __VA_ARGS__ )
+ #define vsscanf_l( __s, __l, __f, ...) _sscanf_l( __s, __f, __l, __VA_ARGS__ )
+ #define sprintf_l( __s, __l, __f, ... ) _sprintf_l( __s, __f, __l, __VA_ARGS__ )
+diff --git a/include/support/win32/support.h b/include/support/win32/support.h
+index e48b08dda..c1032f692 100644
+--- a/include/support/win32/support.h
++++ b/include/support/win32/support.h
+@@ -34,12 +34,13 @@ extern "C" {
+ 
+ int vasprintf(char **sptr, const char *__restrict fmt, va_list ap);
+ int asprintf(char **sptr, const char *__restrict fmt, ...);
++}
++#endif // __MINGW32__
++
+ size_t mbsnrtowcs(wchar_t *__restrict dst, const char **__restrict src,
+                   size_t nmc, size_t len, mbstate_t *__restrict ps);
+ size_t wcsnrtombs(char *__restrict dst, const wchar_t **__restrict src,
+                   size_t nwc, size_t len, mbstate_t *__restrict ps);
+-}
+-#endif // __MINGW32__
+ 
+ #if defined(_LIBCPP_COMPILER_MSVC)
+ 
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+index 15dc05c76..c3d1a1312 100644
+--- a/lib/CMakeLists.txt
++++ b/lib/CMakeLists.txt
+@@ -102,6 +102,16 @@ if (LIBCXXABI_USE_LLVM_UNWINDER)
+   endif()
+ endif()
+ 
++if (MINGW)
++  add_library_flags("mingw32")
++  add_library_flags("gcc")
++  add_library_flags("gcc_eh")
++  add_library_flags("mingwex")
++  add_library_flags("msvcrt")
++  add_library_flags("gcc")
++  add_library_flags("supc++")
++endif()
++
+ # Setup flags.
+ if (NOT WIN32)
+   add_flags_if_supported(-fPIC)
+@@ -242,7 +252,7 @@ if (LIBCXX_ENABLE_STATIC)
+   add_library(cxx_static STATIC $<TARGET_OBJECTS:cxx_objects>)
+   target_link_libraries(cxx_static ${LIBCXX_LIBRARIES})
+   set(STATIC_OUTPUT_NAME "c++")
+-  if (WIN32)
++  if (MSVC)
+     set(STATIC_OUTPUT_NAME "libc++")
+   endif()
+   set_target_properties(cxx_static
+diff --git a/src/locale.cpp b/src/locale.cpp
+index 1460f9662..e8f7dd945 100644
+--- a/src/locale.cpp
++++ b/src/locale.cpp
+@@ -1109,7 +1109,7 @@ ctype<char>::classic_table()  _NOEXCEPT
+ #elif __sun__
+     return __ctype_mask;
+ #elif defined(_LIBCPP_MSVCRT) || defined(__MINGW32__)
+-    return __pctype_func();
++    return (const mask*)__pctype_func(); // FIXME: 'short unsigned int*' to 'const mask* {aka const long unsigned int*}' ???
+ #elif defined(__EMSCRIPTEN__)
+     return *__ctype_b_loc();
+ #elif defined(_NEWLIB_VERSION)
+diff --git a/src/new.cpp b/src/new.cpp
+index 21b307401..3c3fd2df5 100644
+--- a/src/new.cpp
++++ b/src/new.cpp
+@@ -183,7 +183,7 @@ operator new(std::size_t size, std::align_val_t alignment) _THROW_BAD_ALLOC
+     if (static_cast<size_t>(alignment) < sizeof(void*))
+       alignment = std::align_val_t(sizeof(void*));
+     void* p;
+-#if defined(_LIBCPP_MSVCRT)
++#if defined(_LIBCPP_MSVCRT) || defined(__MINGW32__)
+     while ((p = _aligned_malloc(size, static_cast<size_t>(alignment))) == nullptr)
+ #else
+     while (::posix_memalign(&p, static_cast<size_t>(alignment), size) != 0)
+diff --git a/src/support/win32/locale_win32.cpp b/src/support/win32/locale_win32.cpp
+index acbf79ac1..1e74b34a5 100644
+--- a/src/support/win32/locale_win32.cpp
++++ b/src/support/win32/locale_win32.cpp
+@@ -23,7 +23,11 @@ locale_t newlocale( int mask, const char * locale, locale_t /*base*/ )
+ }
+ locale_t uselocale( locale_t newloc )
+ {
++#ifndef __MINGW32__
+     locale_t old_locale = _get_current_locale();
++#else
++    locale_t old_locale = (locale_t)0;
++#endif
+     if ( newloc == NULL )
+         return old_locale;
+     // uselocale sets the thread's locale by definition, so unconditionally use thread-local locale
+diff --git a/src/support/win32/support.cpp b/src/support/win32/support.cpp
+index e989681a6..5acdc5be5 100644
+--- a/src/support/win32/support.cpp
++++ b/src/support/win32/support.cpp
+@@ -16,7 +16,7 @@
+ #include <cwchar>  // mbstate_t
+ 
+ // Some of these functions aren't standard or if they conform, the name does not.
+-
++#ifndef __MINGW32__
+ int asprintf(char **sptr, const char *__restrict format, ...)
+ {
+     va_list ap;
+@@ -51,6 +51,7 @@ int vasprintf( char **sptr, const char *__restrict format, va_list ap )
+     *sptr = p;
+     return count;
+ }
++#endif
+ 
+ // Returns >= 0: the number of wide characters found in the 
+ // multi byte sequence src (of src_size_bytes), that fit in the buffer dst 
+diff --git a/src/system_error.cpp b/src/system_error.cpp
+index cbbbb5dcd..50fe265ad 100644
+--- a/src/system_error.cpp
++++ b/src/system_error.cpp
+@@ -65,7 +65,7 @@ constexpr size_t strerror_buff_size = 1024;
+ 
+ string do_strerror_r(int ev);
+ 
+-#if defined(_LIBCPP_MSVCRT)
++#if defined(_LIBCPP_MSVCRT) || defined(__MINGW32__)
+ string do_strerror_r(int ev) {
+   char buffer[strerror_buff_size];
+   if (::strerror_s(buffer, strerror_buff_size, ev) == 0)
+-- 
+2.11.0
+

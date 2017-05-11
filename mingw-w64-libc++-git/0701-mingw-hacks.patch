@@ -1,0 +1,57 @@
+From fcb4be474f12237beb5bee43f63236f891e1924b Mon Sep 17 00:00:00 2001
+From: Mateusz Mikula <mati865@gmail.com>
+Date: Sat, 22 Apr 2017 23:09:15 +0200
+Subject: [PATCH] mingw hacks
+
+---
+ src/CMakeLists.txt        | 6 ++++++
+ src/cxa_personality.cpp   | 2 ++
+ src/stdlib_new_delete.cpp | 2 +-
+ 3 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index a347703..35cc9ce 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -79,6 +79,12 @@ endif()
+ append_if(LIBCXXABI_COMPILE_FLAGS LIBCXXABI_HAS_FPIC_FLAG -fPIC)
+ append_if(LIBCXXABI_LINK_FLAGS LIBCXXABI_HAS_NODEFAULTLIBS_FLAG -nodefaultlibs)
+ 
++if (MINGW)
++  # Mingw64 requires quite a few "C" runtime libraries in order for basic
++  # programs to link successfully with -nodefaultlibs.
++  list(APPEND libraries mingw32 gcc gcc_eh mingwex msvcrt gcc)
++endif()
++
+ set(LIBCXXABI_SHARED_LINK_FLAGS)
+ 
+ if ( APPLE )
+diff --git a/src/cxa_personality.cpp b/src/cxa_personality.cpp
+index 7f857fa..aad47b3 100644
+--- a/src/cxa_personality.cpp
++++ b/src/cxa_personality.cpp
+@@ -937,6 +937,8 @@ _UA_CLEANUP_PHASE
+ _LIBCXXABI_FUNC_VIS _Unwind_Reason_Code
+ #ifdef __USING_SJLJ_EXCEPTIONS__
+ __gxx_personality_sj0
++#elif defined(__MINGW64__)
++__gxx_personality_seh0
+ #else
+ __gxx_personality_v0
+ #endif
+diff --git a/src/stdlib_new_delete.cpp b/src/stdlib_new_delete.cpp
+index ffd174c..6947a78 100644
+--- a/src/stdlib_new_delete.cpp
++++ b/src/stdlib_new_delete.cpp
+@@ -146,7 +146,7 @@ operator new(std::size_t size, std::align_val_t alignment) _THROW_BAD_ALLOC
+     if (static_cast<size_t>(alignment) < sizeof(void*))
+       alignment = std::align_val_t(sizeof(void*));
+     void* p;
+-#if defined(_LIBCPP_MSVCRT)
++#if defined(_LIBCPP_MSVCRT) || defined(__MINGW32__)
+     while ((p = _aligned_malloc(size, static_cast<size_t>(alignment))) == nullptr)
+ #else
+     while (::posix_memalign(&p, static_cast<size_t>(alignment), size) != 0)
+-- 
+2.12.1
+
