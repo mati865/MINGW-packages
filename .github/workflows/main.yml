@@ -11,15 +11,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: [
-          { msystem: MINGW64, arch: x86_64, can-fail: false },
-          { msystem: MINGW32, arch: i686, can-fail: false },
-          { msystem: UCRT64, arch: ucrt-x86_64, can-fail: false },
-          { msystem: CLANG64, arch: clang-x86_64, can-fail: true }
-        ]
+        include: [{ msystem: CLANG32, arch: i686, can-fail: true }]
     name: ${{ matrix.msystem }}
     steps:
-
       - uses: actions/checkout@v2
         with:
           path: temp
@@ -28,7 +22,7 @@ jobs:
       # to match the autobuild environment
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: "3.8"
 
       - uses: msys2/setup-msys2@v2
         with:
@@ -39,12 +33,17 @@ jobs:
       - name: Add staging repo
         shell: msys2 {0}
         run: |
-          sed -i '1s|^|[staging]\nServer = https://repo.msys2.org/staging/\nSigLevel = Never\n|' /etc/pacman.conf
+          sed -i '1s|^|[staging]\nServer = https://repo.msys2.org/staging/\nSigLevel = Never\n[clang32]\nServer = https://repo.msys2.org/mingw/clang32/\n|' /etc/pacman.conf
 
       - name: Update using staging
         run: |
           msys2 -c 'pacman --noconfirm -Suuy'
           msys2 -c 'pacman --noconfirm -Suu'
+
+      - name: Install clang32 toolchain
+        if: ${{ matrix.msystem == 'CLANG32' }}
+        run: |
+          msys2 -c 'pacman --noconfirm --overwrite "*" -S --needed mingw-w64-clang-i686-toolchain'
 
       - name: Move Checkout
         run: |
