@@ -15,8 +15,8 @@ jobs:
           { msystem: MINGW64, arch: x86_64, can-fail: false },
           { msystem: MINGW32, arch: i686, can-fail: false },
           { msystem: UCRT64, arch: ucrt-x86_64, can-fail: false },
-          { msystem: CLANG64, arch: clang-x86_64, can-fail: true },
-          { msystem: CLANG32, arch: i686, can-fail: true }
+          { msystem: CLANG64, arch: clang-x86_64, can-fail: false },
+          { msystem: CLANG32, arch: clang-i686, can-fail: false }
         ]
     name: ${{ matrix.msystem }}
     steps:
