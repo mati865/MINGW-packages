@@ -20,7 +20,7 @@ pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}"
          $([[ ${CARCH} == i686 ]] || echo "${MINGW_PACKAGE_PREFIX}-rust-wasm")
          "${MINGW_PACKAGE_PREFIX}-rust-src")
 pkgver=1.82.0
-pkgrel=1
+pkgrel=2
 pkgdesc="Systems programming language focused on safety, speed and concurrency (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clangarm64')
@@ -48,6 +48,7 @@ source=("${rust_dist_server}/${_realname}c-${pkgver}-src.tar.gz"{,.asc}
         "${embed_manifest_url}"
         "config.toml"
         "0001-rustc-llvm-fix-libs.patch"
+        "0002-allow-CFGuard-on-windows-gnullvm.patch"
         "0004-compiler-Use-wasm-ld-for-wasm-targets.patch"
         "0005-win32-config.patch"
         "0008-disable-self-contained-for-gnu-targets.patch"
@@ -60,8 +61,9 @@ noextract=(${_realname}c-${pkgver}-src.tar.gz)
 sha256sums=('7c53f4509eda184e174efa6ba7d5eeb586585686ce8edefc781a2b11a7cf512a'
             'SKIP'
             '24ef6d949c0b5b1940c1d6a7aad78d86012152fb8845a1644bc939350d7b75e2'
-            '21ca19cc4247376adf9a5a68ca43fe90baf9774e8c79a06f6df94bf807014613'
+            'bb0ebc4a8a3dcf06f3cbef0315f1f5ff0d803de944804ce9f912e25adf7dee90'
             '7cb1773c288ffb1c1e751edc49b1890c84bf9c362742bc5225d19d474edb73a0'
+            '23e5b6d546b6d1126e437fca33baee9576d67a74ff77ababb4c71272dba79a82'
             '56882f1a0f1404c10c7726d6cc37444f2b343e72b969badfcb43760f80db0f32'
             '7d1c4e49524b835a8eadc961b39f5594b12a522a1e24368999be2c7e85399e4e'
             '98bc3f2bd7371a5b8d14fd7b03bf05574e206d1d9e52bcfbe66d71398504da3c'
@@ -112,6 +114,7 @@ prepare() {
 
   if [[ $MINGW_PACKAGE_PREFIX == *-clang-* ]]; then
     apply_patch_with_msg \
+      0002-allow-CFGuard-on-windows-gnullvm.patch \
       0011-disable-uac-for-installer.patch \
       0013-generate-import-libraries-on-gnullvm.patch
   fi
@@ -189,6 +192,11 @@ build() {
   # Add target wasm32-*
   if [[ ${CARCH} != i686 ]]; then
     sed -i '/target = \[/a\  "wasm32-unknown-unknown", "wasm32-wasip1", "wasm32-wasip1-threads", "wasm32-wasip2",' "../${_realname}c-${pkgver}-src/config.toml"
+  fi
+
+  # Enable CFGuard for gnullvm
+  if [[ $MINGW_PACKAGE_PREFIX == *-clang-* ]]; then
+    sed -i "s/^#control-flow-guard/control-flow-guard/g" "../${_realname}c-${pkgver}-src/config.toml"
   fi
 
   # Building out of tree is not officially supported so we have to workaround some things like vendored deps

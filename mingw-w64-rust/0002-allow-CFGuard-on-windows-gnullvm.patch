@@ -1,0 +1,31 @@
+From 5d434118afbb3d56e358cc4ab45ea4ff2865a3c0 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Mateusz=20Miku=C5=82a?= <mati865@gmail.com>
+Date: Sun, 27 Oct 2024 19:34:00 +0100
+Subject: [PATCH] allow CFGuard on windows-gnullvm
+
+---
+ compiler/rustc_codegen_llvm/src/context.rs | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/compiler/rustc_codegen_llvm/src/context.rs b/compiler/rustc_codegen_llvm/src/context.rs
+index 3fc153c6cd4..7634d3c88ad 100644
+--- a/compiler/rustc_codegen_llvm/src/context.rs
++++ b/compiler/rustc_codegen_llvm/src/context.rs
+@@ -280,8 +280,12 @@ pub(crate) unsafe fn create_module<'ll>(
+         }
+     }
+ 
+-    // Control Flow Guard is currently only supported by the MSVC linker on Windows.
+-    if sess.target.is_like_msvc {
++    // Control Flow Guard is currently only supported by the MSVC and LLVM on Windows.
++    if sess.target.is_like_msvc
++        || (sess.target.options.os == "windows"
++            && sess.target.options.env == "gnu"
++            && sess.target.options.abi == "llvm")
++    {
+         unsafe {
+             match sess.opts.cg.control_flow_guard {
+                 CFGuard::Disabled => {}
+-- 
+2.43.0
+
