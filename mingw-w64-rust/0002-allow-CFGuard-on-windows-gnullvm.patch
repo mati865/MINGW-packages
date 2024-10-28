@@ -17,7 +17,7 @@ index 3fc153c6cd4..7634d3c88ad 100644
  
 -    // Control Flow Guard is currently only supported by the MSVC linker on Windows.
 -    if sess.target.is_like_msvc {
-+    // Control Flow Guard is currently only supported by the MSVC and LLVM on Windows.
++    // Control Flow Guard is currently only supported by MSVC and LLVM on Windows.
 +    if sess.target.is_like_msvc
 +        || (sess.target.options.os == "windows"
 +            && sess.target.options.env == "gnu"
